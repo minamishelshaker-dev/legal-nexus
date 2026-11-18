@@ -32,6 +32,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p>{ar ? "ادخل إلى عمليات مؤسستك القانونية بأمان." : "Access your organization's legal operations securely."}</p>
         {authError && <p className="auth-error" role="alert">{authError}</p>}
         <AuthForm mode="login" lang={lang} />
+        <div className="auth-switch"><Link href="/forgot-password">{ar ? "هل نسيت كلمة المرور؟" : "Forgot your password?"}</Link><span> · </span><Link href="/resend-confirmation">{ar ? "إعادة إرسال التأكيد" : "Resend confirmation"}</Link></div>
         <div className="auth-switch">{ar ? "ليس لديك حساب؟ " : "New to Legal Nexus? "}<Link href="/signup">{ar ? "أنشئ حساباً" : "Create an account"}</Link></div>
         <Link className="auth-home" href="/">{ar ? "العودة إلى المنصة ←" : "← Back to platform"}</Link>
       </section>
