@@ -2,17 +2,17 @@
 
 ## Executive status
 
-The production deployment is READY and points to GitHub `main`. Latest verified production deployment:
+The production deployment is READY and points to GitHub `main`. Latest verified code-bearing production deployment:
 
-- Deployment: `dpl_AXgnbUUmCtu6tpcVJ927JjUXKvB1`
-- Commit: `b666ed6f98f06f13c18f82bd1ec57b671261469c`
-- Commit message: `Fix current member role lookup type error`
-- Latest deployment: `dpl_5r42YmwYFZjtnVzDq5L6t1gEg5GM` (READY)
+- Deployment: `dpl_6TrZsQdoz4EkQnHSCufyuKMYtgxX` (READY)
+- Commit: `1eff78fa73bda066c2c02fda81b5af9ce9d8df97`
+- Commit message: `Localize organization member roles and statuses`
 - Production alias: https://legal-nexus-hayah7.vercel.app
-- Framework: Next.js
-- Build completed and deployment reached READY. The build output lists all 17 static-generation steps complete and includes the account-recovery routes.
+- Framework: Next.js 15.5.29
+- Build completed, TypeScript validation passed, and all 19 static-generation steps completed.
+- The latest build no longer reports the previous Autoprefixer flex-alignment warning. The separate SWC lockfile warning remains open.
 
-This is an infrastructure and source review, not a completed end-to-end acceptance test. No test user credentials were available to the audit, so signup, email confirmation, login, logout, password recovery, organization creation and role-specific workflows have not been exercised as a real user.
+This is an infrastructure and source review, not a completed end-to-end acceptance test. The production database currently has zero organization memberships, so no owner/admin/member/invitee workflow has been exercised with real organization users. Signup, email confirmation, login, logout, password recovery and organization creation also remain pending live acceptance testing.
 
 ## Verified infrastructure
 
