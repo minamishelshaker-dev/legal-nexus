@@ -1,32 +1,54 @@
 # Legal Nexus
 
-This repository contains the application source files recovered from the existing Legal Nexus deployment and the supporting project notes.
+Legal Nexus is a bilingual (Arabic / English) corporate legal operations platform built with Next.js 15, React 19 and Supabase.
 
-## Application
+## Current application baseline
 
-- Framework: Next.js 15
-- React: 19
-- Supabase SSR and JavaScript clients
-- Application source and package manifest: `src/src/`
-- The existing Vercel project is linked to this repository.
-- Vercel project Root Directory: `src/src`
+- Public bilingual landing page describing the platform and its capabilities.
+- Email/password sign-in and account registration with Supabase Auth.
+- Email confirmation callback at `/auth/callback`.
+- First-organization onboarding and organization-scoped workspace.
+- Organization governance: corporate entities and departments.
+- Contract records and legal matters register.
+- Internal legal requests intake and approval workflow foundation.
+- Administrative investigations intake and case workflow foundation.
+- Investigation evidence, custody events and immutable submitted minutes are supported by database-side controls; the user interface and end-to-end operational testing still require further validation.
+
+Some areas shown on the landing page are roadmap capabilities, not completed features. See the workspace for the currently exposed modules.
+
+## Source and deployment
+
+- GitHub repository: `minamishelshaker-dev/legal-nexus`
 - Production branch: `main`
+- Existing Vercel project: `legal-nexus`
+- Vercel Root Directory: `src/src`
+- Application source directory: `src/src/src`
+- Production domain: https://legal-nexus-hayah7.vercel.app
+
+This repository is a recovered working baseline from the existing deployment, not a guaranteed complete archive of the original development workspace. The source files exposed by the deployment were recovered, but local-only files, lockfiles, ignored assets and the full original migration SQL history were not all available.
 
 ## Supabase
 
-The connected Supabase project currently records 44 applied migrations and 27 public tables with RLS enabled. See [the migration inventory](supabase/migrations/README.md).
+- Project: `Legal Nexus`
+- Project ref: `vzeaiqogntexdqggqyiy`
+- Region: `eu-central-1`
+- Applied migration history: 51 migrations.
+- Public database tables: 28; row-level security is enabled on all 28 tables.
+- Security and health advisor checks returned no lint findings at the latest verification.
 
-**Important:** The original SQL bodies for the 44 applied migrations were not exposed by the migration-history API, so this repository currently contains their version/name inventory, not replayable migration SQL. Recover the original migration files from the development workspace before treating this repository as a reproducible database setup.
+The migration inventory is documented in [supabase/migrations/README.md](supabase/migrations/README.md). Migration history in the live database does not mean that all original SQL files are present in this repository. Recover missing migration bodies before treating this repository as a reproducible infrastructure source. Do not blindly replay schema SQL against the existing production database.
 
-## Deployment and configuration
+## Local development
 
-- Existing Vercel project: `legal-nexus` (the existing project, not a duplicate).
-- GitHub repository: `minamishelshaker-dev/legal-nexus`
-- Production branch: `main`
-- Root Directory: `src/src`
-- Supabase environment variables are configured in Vercel. Secret values must remain in Vercel and must not be committed.
-- For local development, copy `src/src/.env.example` to `src/src/.env.local` and fill in authorized project values.
+1. Install dependencies from `src/src`.
+2. Copy `src/src/.env.example` to `src/src/.env.local`.
+3. Populate the authorized Supabase project URL and publishable key locally; do not commit secrets.
+4. Run `npm run dev` from `src/src`.
 
-## Import scope and limitations
+## Required next validation
 
-This import includes the 19 source/configuration files exposed by the previous production deployment, plus repository documentation and safe local configuration templates. Files excluded from that deployment (for example, local-only assets, lockfiles, ignored files, or original migration SQL) cannot be assumed to have been recovered. The source tree should be treated as a recovered baseline, not a complete archival copy of every original development file.
+- Confirm Supabase Auth Site URL and redirect allowlist include the production domain and `/auth/callback`.
+- Test signup, email confirmation, login, logout and first-organization onboarding using a dedicated test account.
+- Test each module with owner, admin, legal manager and ordinary member roles.
+- Verify cross-organization isolation and forbidden operations against real authenticated sessions.
+- Complete the missing edit/review/approval and operational screens before describing roadmap modules as production-ready.
