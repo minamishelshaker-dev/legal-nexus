@@ -1,1 +1,33 @@
-.auth-shell,.workspace-shell{min-height:100vh;background:radial-gradient(circle at 78% 18%,rgba(50,91,115,.22),transparent 34%),#07111c;color:#edf3f5;padding:34px clamp(20px,6vw,88px);display:flex;flex-direction:column}.auth-brand{display:flex;align-items:center;gap:12px;letter-spacing:.12em;font-size:13px}.mark{width:38px;height:38px;border:1px solid #b99a61;color:#d8bd88;display:grid;place-items:center;font-size:13px;letter-spacing:0}.auth-panel{width:min(100%,470px);margin:auto;padding:48px 0}.auth-kicker{font-size:10px;letter-spacing:.2em;color:#c7a96f;margin-bottom:18px}.auth-panel h1,.workspace-card h1{font-size:clamp(32px,5vw,48px);line-height:1.12;font-weight:500;letter-spacing:-.04em;margin:0 0 14px}.auth-panel>p,.workspace-card>p{color:#aebbc4;line-height:1.7;margin:0 0 30px}.auth-form{display:grid;gap:18px}.auth-form label{display:grid;gap:8px;color:#c8d2d8;font-size:12px}.auth-form input{width:100%;background:#0c1b29;border:1px solid #263b4b;border-radius:2px;padding:14px;color:#f5f7f8;outline:none}.auth-form input:focus{border-color:#b99a61}.auth-submit,.signout{background:#c4a36a;color:#08121b;border:0;padding:14px 18px;font-weight:700;cursor:pointer}.auth-submit:disabled{opacity:.6;cursor:wait}.auth-error,.auth-success{font-size:12px;line-height:1.5;margin:0;padding:12px;background:#351c22;color:#ffd4d4}.auth-success{background:#142d2a;color:#c5f3df}.auth-switch{font-size:12px;color:#aebbc4;margin-top:24px}.auth-switch a,.auth-home{color:#d8bd88;text-decoration¶»§q«^
+.auth-shell,.workspace-shell{min-height:100vh;background:radial-gradient(circle at 78% 18%,rgba(50,91,115,.22),transparent 34%),#07111c;color:#edf3f5;padding:34px clamp(20px,6vw,88px);display:flex;flex-direction:column}
+.auth-brand{display:flex;align-items:center;gap:12px;letter-spacing:.12em;font-size:13px}
+.auth-brand .mark{width:38px;height:38px;border:1px solid #b99a61;color:#d8bd88;display:grid;place-items:center;font-size:13px;letter-spacing:0}
+.auth-panel{width:min(100%,470px);margin:auto;padding:48px 0}
+.auth-kicker{font-size:10px;letter-spacing:.2em;color:#c7a96f;margin-bottom:18px}
+.auth-panel h1,.workspace-card h1,.workspace-hero h1{font:500 clamp(32px,5vw,48px)/1.12 Manrope;letter-spacing:-.04em;margin:0 0 14px}
+.auth-panel>p,.workspace-card>p,.workspace-hero>p{color:#aebbc4;line-height:1.7;margin:0 0 30px}
+.auth-form{display:grid;gap:18px}
+.auth-form label{display:grid;gap:8px;color:#c8d2d8;font-size:12px}
+.auth-form input{width:100%;background:#0c1b29;border:1px solid #263b4b;border-radius:2px;padding:14px;color:#f5f7f8;outline:none;font:inherit}
+.auth-form input:focus{border-color:#b99a61}
+.auth-submit,.signout{background:#c4a36a;color:#08121b;border:0;padding:14px 18px;font-weight:700;cursor:pointer}
+.auth-submit:disabled{opacity:.6;cursor:wait}
+.auth-error,.auth-success{font-size:12px;line-height:1.5;margin:0;padding:12px;background:#351c22;color:#ffd4d4}
+.auth-success{background:#142d2a;color:#c5f3df}
+.auth-switch{font-size:12px;color:#aebbc4;margin-top:24px}
+.auth-switch a,.auth-home{color:#d8bd88;text-decoration:underline;text-underline-offset:4px}
+.auth-home{display:inline-block;margin-top:24px;font-size:12px}
+.auth-foot{margin-top:auto;padding-top:30px;color:#728391;font-size:9px;letter-spacing:.15em}
+.onboard-header,.workspace-header,.workspace-user{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.signout{padding:10px 14px;font-size:11px}
+.workspace-shell{padding-top:26px}
+.workspace-hero{padding:76px 0 34px;max-width:720px}
+.workspace-hero h1{font-size:clamp(38px,5vw,58px)}
+.workspace-hero>p{margin-bottom:0}
+.module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.module-card{border:1px solid rgba(205,220,241,.14);background:rgba(17,29,48,.7);padding:24px;min-height:190px}
+.module-number{color:#c7a96f;font-size:10px;letter-spacing:.18em}
+.module-card h2{font:600 17px Manrope;margin:25px 0 10px}
+.module-card p{font-size:12px;color:#aebbc4;line-height:1.7;min-height:40px}
+.module-state{font-size:8px;letter-spacing:.12em;color:#8da9b5}
+.workspace-user>span{font-size:11px;color:#aebbc4}
+@media(max-width:760px){.module-grid{grid-template-columns:1fr}.workspace-header{align-items:flex-start}.workspace-user{align-items:flex-end;flex-direction:column}.workspace-hero{padding:55px 0 28px}}
