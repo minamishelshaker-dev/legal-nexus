@@ -1,14 +1,16 @@
 # Legal Nexus
 
-This repository contains the application source files that were available from the existing Legal Nexus production deployment on 2026-11-18.
+This repository contains the application source files recovered from the existing Legal Nexus deployment and the supporting project notes.
 
 ## Application
 
 - Framework: Next.js 15
 - React: 19
 - Supabase SSR and JavaScript clients
-- Application source is preserved under `src/src/`.
-- Vercel project root directory must be set to `src/src` when connecting this repository.
+- Application source and package manifest: `src/src/`
+- The existing Vercel project is linked to this repository.
+- Vercel project Root Directory: `src/src`
+- Production branch: `main`
 
 ## Supabase
 
@@ -18,10 +20,13 @@ The connected Supabase project currently records 44 applied migrations and 27 pu
 
 ## Deployment and configuration
 
-- The existing Vercel production project has not yet been linked to this GitHub repository. Connect it through Vercel Project Settings → Git, or create a separate Git-connected Vercel project after confirming the intended deployment workflow.
-- Configure the existing Supabase URL and publishable key as Vercel environment variables. No secret values are committed here.
-- For local development, copy `src/src/.env.example` to `src/src/.env.local` and fill in the authorized project values.
+- Existing Vercel project: `legal-nexus` (the existing project, not a duplicate).
+- GitHub repository: `minamishelshaker-dev/legal-nexus`
+- Production branch: `main`
+- Root Directory: `src/src`
+- Supabase environment variables are configured in Vercel. Secret values must remain in Vercel and must not be committed.
+- For local development, copy `src/src/.env.example` to `src/src/.env.local` and fill in authorized project values.
 
-## Import scope
+## Import scope and limitations
 
-This import includes the 19 source/configuration files exposed by the production deployment, plus repository documentation and safe local configuration templates. Files excluded from the deployment (for example, local-only assets, lockfiles, ignored files, or original migration SQL) cannot be assumed to have been recovered.
+This import includes the 19 source/configuration files exposed by the previous production deployment, plus repository documentation and safe local configuration templates. Files excluded from that deployment (for example, local-only assets, lockfiles, ignored files, or original migration SQL) cannot be assumed to have been recovered. The source tree should be treated as a recovered baseline, not a complete archival copy of every original development file.
