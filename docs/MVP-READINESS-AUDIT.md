@@ -4,13 +4,13 @@
 
 The latest code-bearing production deployment is READY:
 
-- Deployment: `dpl_FtWAtuLFWVGWcoEFiq6KVNqXskSJ` (READY)
-- Deployed commit: `31275462d63f66992f7bffc68b126be0edc0e3d4`
-- Commit message: `Fix stylesheet imports in core record detail routes`
+- Deployment: `dpl_DV66T8Jxwd5HD9fTfFacMYJDVTBS` (READY)
+- Deployed commit: `545c2f24c4a935532d8e7a36c166aa61c7e98529`
+- Commit message: `Validate core record date and currency consistency`
 - Production alias: https://legal-nexus-hayah7.vercel.app
 - Framework: Next.js 15.5.29
 - Build completed successfully, TypeScript validation passed, and all 19 static-generation steps completed.
-- The build output includes `/workspace/contracts/[id]` and `/workspace/matters/[id]` detail routes, alongside the existing legal request and member workflows.
+- Production routes include the bilingual contract/matter detail pages, legal-request detail page, member management, invitation callback and account-recovery paths.
 - The build still reports a non-blocking warning about missing SWC dependencies in the lockfile; no validated package lockfile has been committed.
 
 The latest application code is live on the production alias. Subsequent commits after this deployment, if any, are documentation-only.
