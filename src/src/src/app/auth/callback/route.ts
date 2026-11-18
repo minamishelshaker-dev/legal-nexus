@@ -54,5 +54,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(destination);
   }
 
-  return NextResponse.redirect(new URL("/workspace", url.origin));
+  const recoveryRequested = otpType === "recovery" || url.searchParams.get("next") === "/reset-password";
+  return NextResponse.redirect(new URL(recoveryRequested ? "/reset-password" : "/workspace", url.origin));
 }
