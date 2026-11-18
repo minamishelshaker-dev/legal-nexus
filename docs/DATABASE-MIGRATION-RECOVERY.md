@@ -4,7 +4,7 @@
 
 The production Supabase project `vzeaiqogntexdqggqyiy` reports **60 applied migrations**. The current GitHub `main` tree contains only **13 SQL migration files** under `supabase/migrations/`.
 
-A version-by-version comparison confirms that **47 applied migration versions have no matching SQL source file in the repository**. The 12 files currently present all match applied versions; there are no un-applied migration files in the current folder.
+A version-by-version comparison confirms that **47 applied migration versions have no matching SQL source file in the repository**. The 13 files currently present all match applied versions; there are no un-applied migration files in the current folder.
 
 This is migration-source drift, not evidence that the live database is broken. The live schema, RLS policies, triggers and RPCs are present in production. However, a fresh Supabase project cannot be reliably reconstructed from the repository's migration folder alone.
 
@@ -60,12 +60,12 @@ This is migration-source drift, not evidence that the live database is broken. T
 | `20261118114620` | `allow_case_readers_to_log_evidence_access` |
 | `20261118114755` | `harden_evidence_file_integrity_and_custody_log` |
 
-| `20261118212530` | `audit_contract_and_legal_matter_changes` (present in GitHub) |\n\n## Safety constraints
+## Safety constraints
 
 Until the migration history is recovered:
 
 - Do not run `supabase db reset` against production.
-- Do not replay the 59 migrations against production.
+- Do not replay the 60 migrations against production.
 - Do not assume a new Supabase project or branch can be initialized faithfully from the current repository.
 - Do not fabricate historical migration SQL from migration names alone.
 - Do not delete or squash the applied migration history.
