@@ -22,8 +22,8 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Vercel project: `legal-nexus`; framework: Next.js.
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
-- Applied Supabase migration history: 59 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
-- **Migration-source drift:** only 12 SQL migration files are currently present in GitHub, while 59 versions are applied in Supabase. The 47 missing historical source files are listed in [Database Migration Recovery](./DATABASE-MIGRATION-RECOVERY.md). Production is healthy, but a fresh database cannot yet be reproduced from this repository alone; do not reset or replay production migrations.
+- Applied Supabase migration history: 60 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
+- **Migration-source drift:** only 13 SQL migration files are currently present in GitHub, while 60 versions are applied in Supabase. The 47 missing historical source files are listed in [Database Migration Recovery](./DATABASE-MIGRATION-RECOVERY.md). Production is healthy, but a fresh database cannot yet be reproduced from this repository alone; do not reset or replay production migrations.
 - Public base tables: 28; RLS enabled on all 28.
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
@@ -45,6 +45,16 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Legal request intake/listing.
 - Administrative investigation intake and a multi-tab case-detail interface for sessions, statements, evidence, minutes, recommendations, decisions and appeals.
 - Private investigation evidence upload flow records SHA-256 and custody events through a database RPC.
+
+### Contract and legal-matter audit trail — database controls applied
+
+- Added an AFTER INSERT/UPDATE/DELETE trigger to both `contracts` and `legal_matters`.
+- Each event records the organization, actor, resource type and record ID, operation, and changed field names in `audit_events`.
+- The audit metadata intentionally records changed field names, not full before/after values, to reduce unnecessary duplication of sensitive record content.
+- Trigger function is in the non-exposed `private` schema, uses a fixed empty search path, and has direct execute privileges revoked from API roles.
+- Supabase security and health advisors returned no findings after the migration.
+
+**Boundary:** trigger definitions are verified in production. The actual insert/update/delete audit event sequence still requires an authenticated test organization and records; production currently has no contract or legal-matter rows.
 
 ### Organization membership and invitation UI — source and production build verified
 
