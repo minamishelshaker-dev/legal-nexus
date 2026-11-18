@@ -4,16 +4,16 @@
 
 The latest code-bearing production deployment is READY:
 
-- Deployment: `dpl_Go38DpZZpfLjpb683b8eVFYUjVzm` (READY)
-- Deployed commit: `60714a7f4947d85337bc900ab830fb68820d88e5`
-- Commit message: `Remove mismatched duplicate migration filename`
+- Deployment: `dpl_FtWAtuLFWVGWcoEFiq6KVNqXskSJ` (READY)
+- Deployed commit: `31275462d63f66992f7bffc68b126be0edc0e3d4`
+- Commit message: `Fix stylesheet imports in core record detail routes`
 - Production alias: https://legal-nexus-hayah7.vercel.app
 - Framework: Next.js 15.5.29
 - Build completed successfully, TypeScript validation passed, and all 19 static-generation steps completed.
-- The deployed app includes the bilingual legal-request detail route and the invitation return-path flow.
+- The build output includes `/workspace/contracts/[id]` and `/workspace/matters/[id]` detail routes, alongside the existing legal request and member workflows.
 - The build still reports a non-blocking warning about missing SWC dependencies in the lockfile; no validated package lockfile has been committed.
 
-Subsequent GitHub commits after this deployment only update documentation and migration-source inventory; they do not change application runtime code. The latest audit and migration-recovery documents are available in GitHub `main`.
+The latest application code is live on the production alias. Subsequent commits after this deployment, if any, are documentation-only.
 
 This is an infrastructure and source review, not a completed end-to-end acceptance test. The production database currently has zero organization memberships, so no owner/admin/member/invitee workflow has been exercised with real organization users. Signup, email confirmation, login, logout, password recovery and organization creation also remain pending live acceptance testing.
 
@@ -45,6 +45,17 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Legal request intake/listing.
 - Administrative investigation intake and a multi-tab case-detail interface for sessions, statements, evidence, minutes, recommendations, decisions and appeals.
 - Private investigation evidence upload flow records SHA-256 and custody events through a database RPC.
+
+### Contract and legal-matter detail/edit workflow — source and production build verified
+
+- Contract and matter list rows now link to dedicated detail pages.
+- `/workspace/contracts/[id]` supports editing the contract title, reference number, counterparty, type, status, start/end dates, amount and currency.
+- `/workspace/matters/[id]` supports editing the matter title, reference, type, status, priority, description, opened date and closed date.
+- The UI checks the current organization role before enabling edits. Database RLS independently restricts updates to owner/admin/legal_manager/lawyer/contract_manager for contracts and owner/admin/legal_manager/lawyer for legal matters.
+- No direct delete action is exposed in these screens.
+- The Vercel production build generated both detail routes successfully.
+
+**Important boundary:** the screens and role checks are deployed, but the production database has no organization memberships or contract/matter records. Real-user edit and denial tests have not yet been performed.
 
 ### Contract and legal-matter audit trail — database controls applied
 
@@ -128,7 +139,7 @@ The following bilingual account-recovery UI and callback routing are present in 
 10. Test password reset end-to-end: email delivery, callback exchange, recovery session, password update, and login with the new password. Also test expired and already-used links.
 11. Test resend-confirmation email delivery and verify that its link reaches the canonical callback.
 12. Test first-organization creation and verify the database trigger creates exactly one active owner membership.
-13. Add edit/detail screens for contracts and legal matters; current `CoreRecords` component primarily creates and lists records.
+13. Contract and legal-matter detail/edit screens are implemented and deployed; complete acceptance tests for role-based editing, invalid values, and audit_events creation.
 14. The legal-request detail workflow is now implemented; complete its end-to-end acceptance tests, including same-organization assignment, internal comment visibility, sequential approvals and terminal-state protections.
 15. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
 16. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
@@ -155,6 +166,7 @@ The following bilingual account-recovery UI and callback routing are present in 
 - [ ] Ordinary member cannot access restricted HR/investigation records.
 - [ ] Cross-organization reads and writes are denied.
 - [ ] Contracts, matters and legal requests can be created and then correctly retrieved.
+- [ ] Contract and matter edits are restricted by role and each create/update/delete is recorded in audit_events.
 - [ ] Legal request assignment rejects inactive and cross-organization users.
 - [ ] Requesters cannot insert internal comments or read internal notes.
 - [ ] Suspended members cannot access legal requests even if they originally requested or were assigned to one.
@@ -167,4 +179,4 @@ The following bilingual account-recovery UI and callback routing are present in 
 
 ## Release decision
 
-**Not yet acceptance-tested as a complete MVP.** The production infrastructure and security baseline are present; account recovery and the bilingual organization invitation/member UI are implemented and deployed. A live user acceptance pass, confirmation of Supabase Auth configuration, and completion of the workflow gaps above are still required before presenting the system as fully operational. Do not seed fake customer records in the production database for testing.
+**Not yet acceptance-tested as a complete MVP.** The production infrastructure and security baseline are present; account recovery, the bilingual organization invitation/member UI, legal-request details, and contract/legal-matter detail/edit screens are implemented and deployed. A live user acceptance pass, confirmation of Supabase Auth configuration, and completion of the workflow gaps above are still required before presenting the system as fully operational. Do not seed fake customer records in the production database for testing.
