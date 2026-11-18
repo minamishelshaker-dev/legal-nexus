@@ -1,18 +1,58 @@
 import { NextResponse } from "next/server";
+import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+
+const allowedOtpTypes: EmailOtpType[] = ["signup", "invite", "magiclink", "recovery", "email_change", "email"];
+
 export async function GET(request: Request) {
- const url=new URL(request.url);
- const code=url.searchParams.get("code");
- if(!code) return NextResponse.redirect(new URL("/login?error=confirmation",url.origin));
- const supabase=await createClient();
- const {error}=await supabase.auth.exchangeCodeForSession(code);
- if(error) return NextResponse.redirect(new URL("/login?error=confirmation",url.origin));
- const {data:{user}}=await supabase.auth.getUser();
- if(user) {
-  await supabase.from("user_profiles").upsert({
-   id:user.id,
-   full_name:typeof user.user_metadata?.full_name==="string"?user.user_metadata.full_name:null
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const tokenHash = url.searchParams.get("token_hash");
+  const otpType = url.searchParams.get("type") as EmailOtpType | null;
+  const supabase = await createClient();
+
+  let verificationError: Error | null = null;
+
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    verificationError = error;
+  } else if (tokenHash && otpType && allowedOtpTypes.includes(otpType)) {
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: otpType,
+    });
+    verificationError = error;
+  } else {
+    verificationError = new Error("Missing or invalid authentication callback parameters");
+  }
+
+  if (verificationError) {
+    const destination = new URL("/login", url.origin);
+    destination.searchParams.set("error", "confirmation");
+    return NextResponse.redirect(destination);
+  }
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    const destination = new URL("/login", url.origin);
+    destination.searchParams.set("error", "session");
+    return NextResponse.redirect(destination);
+  }
+
+  const fullName = typeof user.user_metadata?.full_name === "string"
+    ? user.user_metadata.full_name.trim()
+    : null;
+
+  const { error: profileError } = await supabase.from("user_profiles").upsert({
+    id: user.id,
+    full_name: fullName || null,
   });
- }
- return NextResponse.redirect(new URL("/workspace",url.origin));
+
+  if (profileError) {
+    const destination = new URL("/login", url.origin);
+    destination.searchParams.set("error", "profile");
+    return NextResponse.redirect(destination);
+  }
+
+  return NextResponse.redirect(new URL("/workspace", url.origin));
 }
