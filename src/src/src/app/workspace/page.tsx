@@ -2,16 +2,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/sign-out-button";
-import "../auth.css";
+import "../../auth.css";
 
 const areas = [
-  ["01", "Organization & governance", "Entities, departments, roles and responsibilities"],
-  ["02", "Contract lifecycle", "Contract records, reviews, approvals and renewals"],
-  ["03", "Legal matters", "Cases, disputes, hearings and deadlines"],
-  ["04", "Investigations", "Administrative investigations, evidence and decisions"],
-  ["05", "Legal requests", "Internal requests, routing and approvals"],
-  ["06", "Documents & obligations", "Secure records, retention and reminders"],
-];
+  ["01", "Organization & governance", "Entities, departments, roles and responsibilities", null],
+  ["02", "Contract lifecycle", "Contract records, reviews, approvals and renewals", null],
+  ["03", "Legal matters", "Cases, disputes, hearings and deadlines", null],
+  ["04", "Investigations", "Administrative investigations, evidence and decisions", null],
+  ["05", "Legal requests", "Internal requests, routing and approvals", "/workspace/requests"],
+  ["06", "Documents & obligations", "Secure records, retention and reminders", null],
+] as const;
 
 export default async function WorkspacePage() {
   const supabase = await createClient();
@@ -28,6 +28,12 @@ export default async function WorkspacePage() {
   if (error) throw new Error("Unable to load your organization access.");
   if (!memberships?.length) redirect("/onboarding");
 
+  const { data: organization } = await supabase
+    .from("organizations")
+    .select("name")
+    .eq("id", memberships[0].organization_id)
+    .maybeSingle();
+
   return (
     <main className="workspace-shell">
       <header className="workspace-header">
@@ -37,15 +43,15 @@ export default async function WorkspacePage() {
       <section className="workspace-hero">
         <div className="auth-kicker">CORPORATE LEGAL OPERATIONS</div>
         <h1>Your legal workspace.</h1>
-        <p>Secure access is active. Your account is connected to {memberships.length} organization membership{memberships.length === 1 ? "" : "s"}.</p>
+        <p>{organization?.name || "Your organization"} · {memberships.length} active organization membership{memberships.length === 1 ? "" : "s"}.</p>
       </section>
       <section className="module-grid" aria-label="Legal Nexus modules">
-        {areas.map(([number, title, description]) => (
-          <article className="module-card" key={number}>
+        {areas.map(([number, title, description, href]) => (
+          <article className={`module-card ${href ? "module-card-active" : ""}`} key={number}>
             <span className="module-number">{number}</span>
             <h2>{title}</h2>
             <p>{description}</p>
-            <span className="module-state">FOUNDATION READY · MODULE UI IN PROGRESS</span>
+            {href ? <Link className="module-link" href={href}>Open module <span>→</span></Link> : <span className="module-state">MODULE UI IN PROGRESS</span>}
           </article>
         ))}
       </section>
