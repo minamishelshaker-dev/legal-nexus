@@ -5,7 +5,7 @@ import SignOutButton from "@/components/sign-out-button";
 import CoreRecordDetail from "@/components/core-record-detail";
 import LanguageSwitcher from "@/components/language-switcher";
 import { getLocale } from "@/lib/locale";
-import "../../auth.css";
+import "../../../auth.css";
 
 export default async function LegalMatterDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
