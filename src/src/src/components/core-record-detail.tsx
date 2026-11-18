@@ -118,7 +118,7 @@ export default function CoreRecordDetail({
       setSaving(false);
       return;
     }
-    if (!isContract && form.status !== "closed" && form.closed_at) {
+    if (!isContract && !["closed", "archived"].includes(form.status) && form.closed_at) {
       setError(ar ? "امسح تاريخ الإغلاق إذا كان الملف غير مغلق." : "Clear the closed date while the matter is not closed.");
       setSaving(false);
       return;
