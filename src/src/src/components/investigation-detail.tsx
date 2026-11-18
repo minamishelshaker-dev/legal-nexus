@@ -46,7 +46,9 @@ export default function InvestigationDetail({investigationId,organizationId,user
   if(!decisionMaker)return;setBusy(true);setError("");const{error}=await db.from("administrative_investigations").update({decision_maker_user_id:decisionMaker}).eq("id",investigationId);
   if(error)setError(error.message);else setNotice(ar?"تم تعيين صاحب سلطة القرار.":"Decision maker assigned.");setBusy(false);
  }
- const field=(label:string,child:ReactNode)=><label>{label}{child}</label>;\n const canWork=canManage||caseAccess?.investigator_user_id===userId;\n const canIssueDecision=canDecide||caseAccess?.decision_maker_user_id===userId;
+ const field=(label:string,child:ReactNode)=><label>{label}{child}</label>;
+ const canWork=canManage||caseAccess?.investigator_user_id===userId;
+ const canIssueDecision=canDecide||caseAccess?.decision_maker_user_id===userId;
  const inputClass="module-form";
  return <section className="module-panel investigation-detail">
   <div className="panel-heading"><span className="auth-kicker">{ar?"ملف التحقيق":"INVESTIGATION FILE"}</span><h2>{ar?"إجراءات ووقائع التحقيق":"Investigation proceedings & record"}</h2><p>{ar?"كل سجل مرتبط بملف التحقيق ويخضع لصلاحياته. لا تُعد التوصية قراراً نهائياً.":"Every record is linked to this case and governed by its access rules. A recommendation is not a final decision."}</p></div>
