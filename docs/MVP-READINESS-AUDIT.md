@@ -21,7 +21,7 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Vercel project: `legal-nexus`; framework: Next.js.
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
-- Applied Supabase migration history: 59 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
+- Applied Supabase migration history: 58 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
 - Public base tables: 28; RLS enabled on all 28.
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
