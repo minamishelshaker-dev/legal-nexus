@@ -2,15 +2,17 @@
 
 ## Executive status
 
-The production deployment is READY and points to GitHub `main`. Latest verified code-bearing production deployment:
+The production deployment is READY and points to GitHub `main`. Latest verified production deployment:
 
-- Deployment: `dpl_6TrZsQdoz4EkQnHSCufyuKMYtgxX` (READY)
-- Commit: `1eff78fa73bda066c2c02fda81b5af9ce9d8df97`
-- Commit message: `Localize organization member roles and statuses`
+- Deployment: `dpl_43YqzeWW1idFqDGhcPHrWH66a7hP` (READY)
+- Deployed commit: `c0ad5cd4c7b2a2355f7ff35a4fca7619e5007405`
+- Commit message: `Add legal request detail route`
 - Production alias: https://legal-nexus-hayah7.vercel.app
 - Framework: Next.js 15.5.29
-- Build completed, TypeScript validation passed, and all 19 static-generation steps completed.
-- The latest build no longer reports the previous Autoprefixer flex-alignment warning. The separate SWC lockfile warning remains open.
+- Build completed and the deployment output includes `/workspace/requests/[id]` and 19 static-generation steps.
+- The separate SWC lockfile warning remains open.
+
+**Deployment boundary:** subsequent source refinements are committed to GitHub `main`, but a fresh production deployment is pending. Vercel rejected a manual deployment request with HTTP 402 because the team exceeded its daily deployment API limit (retry after 24 hours). The latest successful production deployment above remains active; do not treat later unbuilt source commits as live.
 
 This is an infrastructure and source review, not a completed end-to-end acceptance test. The production database currently has zero organization memberships, so no owner/admin/member/invitee workflow has been exercised with real organization users. Signup, email confirmation, login, logout, password recovery and organization creation also remain pending live acceptance testing.
 
@@ -81,7 +83,7 @@ Database hardening applied and verified:
 - New approval steps must be created as pending, in strict sequential order, by the authenticated creator, and cannot be added to a terminal request.
 - Supabase security and health advisors returned no findings after these migrations.
 
-**Important boundary:** the detail UI and database controls have been implemented, but no organization memberships or real legal requests currently exist in the production database. Assignment, comments, approval ordering and role access therefore remain untested end-to-end with real users.
+**Important boundary:** the initial request-detail route is present in the last READY deployment. The request-list link and later refinements are committed to `main` but await a fresh deployment because of the Vercel daily API limit. No organization memberships or real legal requests currently exist in the production database, so assignment, comments, approval ordering and role access remain untested end-to-end with real users.
 
 ### Account recovery implementation — source and production build verified
 
