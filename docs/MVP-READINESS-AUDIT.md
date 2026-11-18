@@ -66,7 +66,7 @@ The following bilingual account-recovery UI and callback routing are present in 
 - The sign-in page links to password recovery and confirmation resend.
 - The callback routes recovery links to `/reset-password` when the OTP type is `recovery` or the callback includes the controlled `next=/reset-password` parameter.
 - Recovery callbacks do not depend on profile upsert succeeding, so an unrelated profile-provisioning issue cannot block the password change.
-- The latest Vercel build output lists `/forgot-password`, `/reset-password`, `/resend-confirmation` and `/auth/callback`, and completed static generation (17/17).
+- The latest Vercel build output lists `/forgot-password`, `/reset-password`, `/resend-confirmation` and `/auth/callback`, and completed static generation (19/19) in the member-management build.
 
 **Important boundary:** source implementation and successful deployment do not prove that Supabase sends the emails, that the configured redirect allowlist and email templates are correct, or that a user can complete the recovery flow. These still require a real test account and mailbox.
 
@@ -81,7 +81,6 @@ The following bilingual account-recovery UI and callback routing are present in 
 7. Test password reset end-to-end: email delivery, callback exchange, recovery session, password update, and login with the new password. Also test expired and already-used links.
 8. Test resend-confirmation email delivery and verify that its link reaches the canonical callback.
 9. Test first-organization creation and verify the database trigger creates exactly one active owner membership.
-10. The member invitation UI is now implemented and deployed; end-to-end behavior remains untested with real users. Add member role editing/removal and automated invitation email delivery as later scope.
 11. Add edit/detail screens for contracts and legal matters; current `CoreRecords` component primarily creates and lists records.
 12. Complete legal-request review, assignment, comments and approval actions in the UI; current `LegalRequests` component primarily submits and lists requests.
 13. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
