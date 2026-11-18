@@ -21,7 +21,7 @@ export default function InvitationAcceptance({ token, isSignedIn, email, lang = 
   }
   return <section className="auth-panel"><div className="auth-kicker">{ar ? "دعوة مؤسسة" : "ORGANIZATION INVITATION"}</div><h1>{ar ? "انضم إلى مساحة العمل." : "Join the workspace."}</h1>
     <p>{ar ? "قبول الدعوة يتطلب تسجيل الدخول بالبريد الإلكتروني الذي أُرسلت إليه الدعوة." : "To accept this invitation, sign in using the email address the invitation was issued to."}</p>
-    {isSignedIn ? <><p>{ar ? "الحساب الحالي: " : "Currently signed in as: "}<strong>{email}</strong></p><button className="primary" disabled={busy || done} onClick={() => void accept()}>{busy ? (ar ? "جارٍ قبول الدعوة..." : "Accepting…") : (ar ? "قبول الدعوة" : "Accept invitation")}</button></> : <div className="form-actions"><Link className="module-link" href="/login">{ar ? "تسجيل الدخول" : "Sign in"}</Link><Link className="module-link" href="/signup">{ar ? "إنشاء حساب" : "Create account"}</Link></div>}
+    {isSignedIn ? <><p>{ar ? "الحساب الحالي: " : "Currently signed in as: "}<strong>{email}</strong></p><button className="primary" disabled={busy || done} onClick={() => void accept()}>{busy ? (ar ? "جارٍ قبول الدعوة..." : "Accepting…") : (ar ? "قبول الدعوة" : "Accept invitation")}</button></> : <div className="form-actions"><Link className="module-link" href={`/login?next=${encodeURIComponent(`/invite?token=${token}`)}`}>{ar ? "تسجيل الدخول" : "Sign in"}</Link><Link className="module-link" href={`/signup?next=${encodeURIComponent(`/invite?token=${token}`)}`}>{ar ? "إنشاء حساب" : "Create account"}</Link></div>}
     {done && <p className="success-message">{ar ? "تم قبول الدعوة." : "Invitation accepted."}</p>}
     {error && <p className="error-message" role="alert">{error}</p>}
   </section>;
