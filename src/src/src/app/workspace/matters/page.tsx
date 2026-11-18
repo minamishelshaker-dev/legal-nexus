@@ -1,17 +1,3 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import SignOutButton from "@/components/sign-out-button";
-import CoreRecords from "@/components/core-records";
-import "../../auth.css";
-
-export default async function LegalMattersPage() {
- const supabase=await createClient();
- const {data:{user}}=await supabase.auth.getUser();
- if(!user) redirect("/login");
- const {data:membership,error}=await supabase.from("organization_memberships").select("organization_id").eq("user_id",user.id).eq("status","active").order("created_at",{ascending:true}).limit(1).maybeSingle();
- if(error) throw new Error("Unable to verify organization access.");
- if(!membership) redirect("/onboarding");
- const {data:organization}=await supabase.from("organizations").select("name").eq("id",membership.organization_id).maybeSingle();
- return <main className="workspace-shell"><header className="workspace-header"><Link href="/workspace" className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></Link><div className="workspace-user"><span>{user.email}</span><SignOutButton/></div></header><section className="workspace-hero module-hero"><div className="auth-kicker">LEGAL MATTERS</div><h1>Legal matters.</h1><p>{organization?.name || "Your organization"} · Register and track cases and disputes.</p><Link href="/workspace" className="back-link">← Back to workspace</Link></section><CoreRecords mode="matters" organizationId={membership.organization_id}/><footer className="auth-foot">LEGAL NEXUS · ORGANIZATION DATA IS PROTECTED BY ROW-LEVEL SECURITY</footer></main>;
-}
+import Link from "next/link";import {redirect} from "next/navigation";import {createClient} from "@/lib/supabase/server";import SignOutButton from "@/components/sign-out-button";import CoreRecords from "@/components/core-records";import LanguageSwitcher from "@/components/language-switcher";import {getLocale} from "@/lib/locale";import "../../auth.css";
+export default async function LegalMattersPage(){const lang=await getLocale();const ar=lang==="ar";const supabase=await createClient();const{data:{user}}=await supabase.auth.getUser();if(!user)redirect("/login");const{data:membership,error}=await supabase.from("organization_memberships").select("organization_id").eq("user_id",user.id).eq("status","active").order("created_at",{ascending:true}).limit(1).maybeSingle();if(error)throw new Error("Unable to verify organization access.");if(!membership)redirect("/onboarding");const{data:organization}=await supabase.from("organizations").select("name").eq("id",membership.organization_id).maybeSingle();
+return <main className={"workspace-shell "+(ar?"is-ar":"")} dir={ar?"rtl":"ltr"}><header className="workspace-header"><Link href="/workspace" className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></Link><div className="workspace-user"><LanguageSwitcher lang={lang}/><span>{user.email}</span><SignOutButton/></div></header><section className="workspace-hero module-hero"><div className="auth-kicker">{ar?"القضايا والمنازعات":"LEGAL MATTERS"}</div><h1>{ar?"القضايا والمنازعات.":"Legal matters."}</h1><p>{organization?.name|| (ar?"مؤسستك":"Your organization")} · {ar?"تسجيل ملفات القضايا والمنازعات ومتابعتها.":"Register and track cases and disputes."}</p><Link href="/workspace" className="back-link">{ar?"العودة إلى مساحة العمل ←":"← Back to workspace"}</Link></section><CoreRecords mode="matters" organizationId={membership.organization_id} lang={lang}/><footer className="auth-foot">LEGAL NEXUS · {ar?"بيانات المؤسسة محمية بصلاحيات الوصول":"ORGANIZATION DATA IS PROTECTED BY ROW-LEVEL SECURITY"}</footer></main>}
