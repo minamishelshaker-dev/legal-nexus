@@ -10,7 +10,8 @@ export default function AuthForm({mode,lang="en"}:{mode:Mode;lang?:"ar"|"en"}){
  const [email,setEmail]=useState("");const [password,setPassword]=useState("");const [fullName,setFullName]=useState("");const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");const [error,setError]=useState("");const router=useRouter();
  async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();setBusy(true);setError("");setMessage("");const supabase=createClient();try{
   if(mode==="login"){const {error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;router.replace("/workspace");router.refresh();return;}
-  const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin+"/auth/callback",data:{full_name:fullName.trim()||null}}});if(error)throw error;
+  const appOrigin = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? window.location.origin : "https://legal-nexus-hayah7.vercel.app";
+  const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:appOrigin+"/auth/callback",data:{full_name:fullName.trim()||null}}});if(error)throw error;
   if(data.session){router.replace("/onboarding");router.refresh();}else setMessage(ar?"تم استلام طلب إنشاء الحساب. تحقق من بريدك الإلكتروني واتبع رابط التأكيد للمتابعة.":"Your account request was received. Check your email and follow the confirmation link to continue.");
  }catch(e){setError(e instanceof Error?e.message:(ar?"حدث خطأ. حاول مرة أخرى.":"Something went wrong. Please try again."));}finally{setBusy(false);}}
  return <form className="auth-form" onSubmit={submit}>
