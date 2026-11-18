@@ -1,0 +1,4 @@
+import Link from "next/link";
+import AuthForm from "@/components/auth-form";
+import "../auth.css";
+export default function LoginPage() { return <main className="auth-shell"><div className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></div><section className="auth-panel"><div className="auth-kicker">WELCOME BACK</div><h1>Sign in to your workspace.</h1><p>Access your organization's legal operations securely.</p><AuthForm mode="login"/><div className="auth-switch">New to Legal Nexus? <Link href="/signup">Create an account</Link></div><Link className="auth-home" href="/">← Back to platform</Link></section><div className="auth-foot">LEGAL NEXUS · CORPORATE LEGAL OPERATING SYSTEM</div></main> }
