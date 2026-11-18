@@ -11,7 +11,8 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const lang = await getLocale();
   const ar = lang === "ar";
-  const { error, password, next } = await searchParams;\n  const returnTo = next?.startsWith("/") && !next.startsWith("//") && !next.includes("\\\\") ? next : undefined;
+  const { error, password, next } = await searchParams;
+  const returnTo = next?.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : undefined;
   const authError = error === "confirmation"
     ? (ar ? "تعذر تأكيد البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية أو غير صالح. اطلب رسالة تأكيد جديدة." : "We couldn't confirm your email. The link may be expired or invalid. Request a new confirmation email.")
     : error === "session"
