@@ -5,13 +5,13 @@ import { getLocale } from "@/lib/locale";
 import "../auth.css";
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string; password?: string }>;
+  searchParams: Promise<{ error?: string; password?: string; next?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const lang = await getLocale();
   const ar = lang === "ar";
-  const { error, password } = await searchParams;
+  const { error, password, next } = await searchParams;\n  const returnTo = next?.startsWith("/") && !next.startsWith("//") && !next.includes("\\\\") ? next : undefined;
   const authError = error === "confirmation"
     ? (ar ? "تعذر تأكيد البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية أو غير صالح. اطلب رسالة تأكيد جديدة." : "We couldn't confirm your email. The link may be expired or invalid. Request a new confirmation email.")
     : error === "session"
@@ -32,9 +32,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <h1>{ar ? "سجل الدخول إلى مساحة عملك" : "Sign in to your workspace."}</h1>
         <p>{ar ? "ادخل إلى عمليات مؤسستك القانونية بأمان." : "Access your organization's legal operations securely."}</p>
         {authError && <p className="auth-error" role="alert">{authError}</p>}{authSuccess && <p className="auth-success" role="status">{authSuccess}</p>}
-        <AuthForm mode="login" lang={lang} />
+        <AuthForm mode="login" lang={lang} returnTo={returnTo} />
         <div className="auth-switch"><Link href="/forgot-password">{ar ? "هل نسيت كلمة المرور؟" : "Forgot your password?"}</Link><span> · </span><Link href="/resend-confirmation">{ar ? "إعادة إرسال التأكيد" : "Resend confirmation"}</Link></div>
-        <div className="auth-switch">{ar ? "ليس لديك حساب؟ " : "New to Legal Nexus? "}<Link href="/signup">{ar ? "أنشئ حساباً" : "Create an account"}</Link></div>
+        <div className="auth-switch">{ar ? "ليس لديك حساب؟ " : "New to Legal Nexus? "}<Link href={returnTo ? `/signup?next=${encodeURIComponent(returnTo)}` : "/signup"}>{ar ? "أنشئ حساباً" : "Create an account"}</Link></div>
         <Link className="auth-home" href="/">{ar ? "العودة إلى المنصة ←" : "← Back to platform"}</Link>
       </section>
       <div className="auth-foot">LEGAL NEXUS · CORPORATE LEGAL OPERATING SYSTEM</div>
