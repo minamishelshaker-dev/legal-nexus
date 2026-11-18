@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "@/lib/locale";
 import InvitationAcceptance from "@/components/invitation-acceptance";
-import "../../auth.css";
+import "../auth.css";
 
 export default async function InvitePage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;
