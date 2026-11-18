@@ -98,6 +98,36 @@ export default function CoreRecordDetail({
     setSaving(true);
     setError("");
     setNotice("");
+    if (isContract && form.start_date && form.end_date && form.end_date < form.start_date) {
+      setError(ar ? "تاريخ انتهاء العقد لا يمكن أن يسبق تاريخ بدايته." : "Contract end date cannot be earlier than its start date.");
+      setSaving(false);
+      return;
+    }
+    if (isContract && form.status === "expired" && !form.end_date) {
+      setError(ar ? "أدخل تاريخ انتهاء العقد قبل تغيير حالته إلى منتهٍ." : "Enter the contract end date before marking it expired.");
+      setSaving(false);
+      return;
+    }
+    if (isContract && !/^[A-Za-z]{3}$/.test(form.currency_code.trim())) {
+      setError(ar ? "أدخل رمز عملة مكوناً من ثلاثة أحرف." : "Enter a three-letter currency code.");
+      setSaving(false);
+      return;
+    }
+    if (!isContract && form.status === "closed" && !form.closed_at) {
+      setError(ar ? "أدخل تاريخ الإغلاق قبل إغلاق الملف." : "Enter a closed date before closing the matter.");
+      setSaving(false);
+      return;
+    }
+    if (!isContract && form.status !== "closed" && form.closed_at) {
+      setError(ar ? "امسح تاريخ الإغلاق إذا كان الملف غير مغلق." : "Clear the closed date while the matter is not closed.");
+      setSaving(false);
+      return;
+    }
+    if (!isContract && form.closed_at && form.opened_at && form.closed_at < form.opened_at) {
+      setError(ar ? "تاريخ الإغلاق لا يمكن أن يسبق تاريخ القيد." : "Closed date cannot be earlier than the opened date.");
+      setSaving(false);
+      return;
+    }
     let result: { data: unknown; error: { message: string } | null };
     if (isContract) {
       const amount = form.value_amount.trim() ? Number(form.value_amount) : null;
