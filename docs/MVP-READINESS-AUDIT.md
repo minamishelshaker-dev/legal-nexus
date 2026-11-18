@@ -23,8 +23,8 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Vercel project: `legal-nexus`; framework: Next.js.
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
-- Applied Supabase migration history: 60 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
-- **Migration-source drift:** only 13 SQL migration files are currently present in GitHub, while 60 versions are applied in Supabase. The 47 missing historical source files are listed in [Database Migration Recovery](./DATABASE-MIGRATION-RECOVERY.md). Production is healthy, but a fresh database cannot yet be reproduced from this repository alone; do not reset or replay production migrations.
+- Applied Supabase migration history: 63 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
+- **Migration-source drift:** only 16 SQL migration files are currently present in GitHub, while 63 versions are applied in Supabase. The 47 missing historical source files are listed in [Database Migration Recovery](./DATABASE-MIGRATION-RECOVERY.md). Production is healthy, but a fresh database cannot yet be reproduced from this repository alone; do not reset or replay production migrations.
 - Public base tables: 28; RLS enabled on all 28.
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
@@ -67,6 +67,18 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Supabase security and health advisors returned no findings after the migration.
 
 **Boundary:** trigger definitions are verified in production. The actual insert/update/delete audit event sequence still requires an authenticated test organization and records; production currently has no contract or legal-matter rows.
+
+### Documents and obligations — database foundation applied
+
+- Created the private Storage bucket `organization-documents-private`, capped at 50 MiB per file and restricted to an explicit business-document MIME allowlist.
+- Storage object paths must follow `organization_id/document_id/file_name`. Upload authorization requires an existing document metadata row, an active membership in that organization, and that the uploader owns the metadata row.
+- Document classification is enforced at database level: all active members may register public/internal documents; confidential/restricted/highly restricted classifications require a legal-sensitive role.
+- Private-file reads are subject to Storage RLS and the same document classification rules. Download requests can be logged through an invoker-safe RPC constrained by an insert policy on `audit_events`.
+- Document identity, organization, uploader and storage path are immutable after creation; related contract/matter references must belong to the same organization.
+- Added an `obligations` table with due date, type, status, priority, responsible user and optional contract/matter reference. RLS limits visibility and changes by organization and legal role; triggers enforce active same-organization assignees and source-record ownership.
+- Document and obligation create/update/delete operations are connected to the generic audit trigger.
+
+**Boundary:** the database foundation and private bucket are applied, but the user-facing document upload/download screen and obligations board have not yet been implemented. There are no memberships, documents or obligations in production, so storage and workflow behavior has not been exercised with real users.
 
 ### Organization membership and invitation UI — source and production build verified
 
@@ -144,7 +156,8 @@ The following bilingual account-recovery UI and callback routing are present in 
 14. The legal-request detail workflow is now implemented; complete its end-to-end acceptance tests, including same-organization assignment, internal comment visibility, sequential approvals and terminal-state protections.
 15. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
 16. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
-17. Review the deployment's environment variables and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
+17. Review the deployment's environment variables
+18. Build the Documents & Obligations UI: secure file upload/retry, signed downloads with access logging, classification display, and obligation creation/update views. and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
 
 ## Manual acceptance checklist
 
@@ -168,6 +181,10 @@ The following bilingual account-recovery UI and callback routing are present in 
 - [ ] Cross-organization reads and writes are denied.
 - [ ] Contracts, matters and legal requests can be created and then correctly retrieved.
 - [ ] Contract and matter edits are restricted by role and each create/update/delete is recorded in audit_events.
+- [ ] Documents are uploaded only to the private organization bucket using organization/document/file paths.
+- [ ] Storage read policies enforce document classification and active membership.
+- [ ] Download requests create audit_events entries.
+- [ ] Obligations cannot be assigned to inactive or cross-organization users and cannot reference another organization's records.
 - [ ] Legal request assignment rejects inactive and cross-organization users.
 - [ ] Requesters cannot insert internal comments or read internal notes.
 - [ ] Suspended members cannot access legal requests even if they originally requested or were assigned to one.
