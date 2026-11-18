@@ -4,7 +4,7 @@
 
 The production Supabase project `vzeaiqogntexdqggqyiy` reports **63 applied migrations**. The current GitHub `main` tree contains only **16 SQL migration files** under `supabase/migrations/`.
 
-A version-by-version comparison confirms that **47 applied migration versions have no matching SQL source file in the repository**. The 13 files currently present all match applied versions; there are no un-applied migration files in the current folder.
+A version-by-version comparison confirms that **47 applied migration versions have no matching SQL source file in the repository**. The 16 files currently present all match applied versions; there are no un-applied migration files in the current folder.
 
 This is migration-source drift, not evidence that the live database is broken. The live schema, RLS policies, triggers and RPCs are present in production. However, a fresh Supabase project cannot be reliably reconstructed from the repository's migration folder alone.
 
