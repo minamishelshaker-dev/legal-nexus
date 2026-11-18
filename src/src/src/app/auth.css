@@ -8,3 +8,6 @@
 .is-ar .investigation-tabs,.is-ar .decision-assignment{direction:rtl}
 
 .module-shortcuts{display:flex;gap:24px;flex-wrap:wrap;align-items:center}.invite-link-box{display:grid;gap:12px;padding:16px;border:1px solid var(--line);background:rgba(198,165,107,.05)}.invite-link-box input{font-size:11px;direction:ltr;text-align:left}.invite-link-box .secondary-button{justify-self:start}.is-ar .invite-link-box .secondary-button{justify-self:end}
+
+.member-controls{display:grid;gap:10px;justify-items:end;min-width:min(100%,260px)}.member-control-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.member-control-actions select{min-width:170px;max-width:100%;background:#0b1525;border:1px solid var(--line);color:var(--text);padding:10px;font:inherit;font-size:11px}.member-control-actions button{font-size:10px;padding:9px 12px}.member-control-actions button:disabled{opacity:.45;cursor:not-allowed}.is-ar .member-controls{justify-items:start}.is-ar .member-control-actions{justify-content:flex-start}
+@media(max-width:680px){.member-controls{justify-items:stretch;min-width:0}.member-control-actions{justify-content:stretch}.member-control-actions select{width:100%;min-width:0}.member-control-actions button{flex:1}}
