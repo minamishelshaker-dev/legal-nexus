@@ -139,7 +139,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
           <div className="request-row-main"><h3>{profiles[member.user_id] || (member.user_id === currentUserId ? (ar ? "حسابك" : "Your account") : (ar ? "عضو المؤسسة" : "Organization member"))}</h3><div className="request-meta"><span>{member.membership_role}</span><span>{member.status}</span></div><p>{member.user_id === currentUserId ? (ar ? "المستخدم الحالي" : "Current user") : (ar ? "معرّف العضو: " : "Member ID: ") + member.user_id.slice(0, 8)}</p></div>
           <div className="member-controls">
             <span className="status-pill">{member.membership_role} · {member.status}</span>
-            {canInvite && member.membership_role !== "owner" && (canAppointAdmin || member.membership_role !== "admin") && <div className="member-control-actions">
+            {canInvite && member.user_id !== currentUserId && member.membership_role !== "owner" && (canAppointAdmin || member.membership_role !== "admin") && <div className="member-control-actions">
               <select aria-label={ar ? "دور العضو" : "Member role"} value={draftRoles[member.id] ?? member.membership_role} disabled={busyMember === member.id} onChange={(e) => setDraftRoles((previous) => ({ ...previous, [member.id]: e.target.value }))}>
                 {canAppointAdmin && <option value="admin">{ar ? "مسؤول المؤسسة" : "Organization admin"}</option>}
                 {roles.map(([value, arabic, english]) => <option key={value} value={value}>{ar ? arabic : english}</option>)}
