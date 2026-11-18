@@ -2,17 +2,18 @@
 
 ## Executive status
 
-The production deployment is READY and points to GitHub `main`. Latest verified production deployment:
+The latest code-bearing production deployment is READY:
 
-- Deployment: `dpl_HQBHJGah2HD4ygK3qZynZeWfpJUt` (READY)
-- Deployed commit: `010cb11a5af0d0a971bdb7bc03cec846451a91a2`
-- Commit message: `Finalize auth callback safe redirect syntax`
+- Deployment: `dpl_Go38DpZZpfLjpb683b8eVFYUjVzm` (READY)
+- Deployed commit: `60714a7f4947d85337bc900ab830fb68820d88e5`
+- Commit message: `Remove mismatched duplicate migration filename`
 - Production alias: https://legal-nexus-hayah7.vercel.app
 - Framework: Next.js 15.5.29
 - Build completed successfully, TypeScript validation passed, and all 19 static-generation steps completed.
+- The deployed app includes the bilingual legal-request detail route and the invitation return-path flow.
 - The build still reports a non-blocking warning about missing SWC dependencies in the lockfile; no validated package lockfile has been committed.
 
-The Git-connected Vercel deployment completed successfully after the earlier manual deployment API limit. The production alias now includes the legal-request detail workflow, least-privilege request visibility, and the invitation return-path changes.
+Subsequent GitHub commits after this deployment only update documentation and migration-source inventory; they do not change application runtime code. The latest audit and migration-recovery documents are available in GitHub `main`.
 
 This is an infrastructure and source review, not a completed end-to-end acceptance test. The production database currently has zero organization memberships, so no owner/admin/member/invitee workflow has been exercised with real organization users. Signup, email confirmation, login, logout, password recovery and organization creation also remain pending live acceptance testing.
 
