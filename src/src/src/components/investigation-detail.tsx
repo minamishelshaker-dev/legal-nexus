@@ -32,7 +32,7 @@ export default function InvestigationDetail({investigationId,organizationId,user
    db.from("organization_memberships").select("user_id,membership_role,user_profiles(full_name)").eq("organization_id",organizationId).eq("status","active")
   ]);
   const setters=[setCaseAccess,setSessions,setStatements,setEvidence,setMinutes,setRecommendations,setDecisions,setAppeals,setMembers];
-  for(let i=0;i<queries.length;i++){const q=queries[i] as any;if(q.error){setError(q.error.message);continue;}setters[i](q.data||[]);}
+  for(let i=0;i<queries.length;i++){const q=queries[i] as any;if(q.error){setError(q.error.message);continue;}setters[i](i===0?(q.data||null):(q.data||[]));}
  },[db,investigationId,organizationId]);
  useEffect(()=>{void load();},[load]);
  async function run(e:FormEvent<HTMLFormElement>,table:string,payload:Row,success?:()=>void){
