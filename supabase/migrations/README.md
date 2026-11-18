@@ -3,7 +3,7 @@
 Project: `vzeaiqogntexdqggqyiy` (Legal Nexus)
 Snapshot date: 2026-11-18
 
-The following 48 migration versions are recorded as applied in the connected Supabase database. This is an inventory only: the Supabase migration-list API exposes version and name metadata, not the original SQL bodies. Do not use this file as a substitute for executable migration files or as a basis for rebuilding a database.
+The following 48 migration versions are recorded as applied in the connected Supabase database. The final evidence access-policy migration is preserved as an executable SQL file in this repository. The original SQL bodies for the other migrations, including the first three evidence-storage migrations, are not present in this repository and must be recovered before treating it as a reproducible infrastructure source.
 
 | Version | Migration |
 |---|---|
@@ -65,4 +65,4 @@ The following 48 migration versions are recorded as applied in the connected Sup
 
 ## Required follow-up
 
-Recover the original SQL migration files from the original development workspace or an authenticated Supabase CLI/database source before treating this repository as a reproducible infrastructure source. The four evidence-storage migrations were applied directly to the connected database; their SQL bodies should be recovered and committed as executable migration files before using this repository to provision another environment. Do not blindly replay schema SQL against the existing production database.
+Recover the original SQL migration files from the original development workspace or an authenticated Supabase CLI/database source before treating this repository as a reproducible infrastructure source. The three initial evidence-storage migrations were applied directly to the connected database; their SQL bodies should be recovered and committed as executable migration files before using this repository to provision another environment. Do not blindly replay schema SQL against the existing production database.
