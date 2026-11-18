@@ -2,7 +2,7 @@
 
 ## Current state
 
-The production Supabase project `vzeaiqogntexdqggqyiy` reports **59 applied migrations**. The current GitHub `main` tree contains only **12 SQL migration files** under `supabase/migrations/`.
+The production Supabase project `vzeaiqogntexdqggqyiy` reports **60 applied migrations**. The current GitHub `main` tree contains only **13 SQL migration files** under `supabase/migrations/`.
 
 A version-by-version comparison confirms that **47 applied migration versions have no matching SQL source file in the repository**. The 12 files currently present all match applied versions; there are no un-applied migration files in the current folder.
 
@@ -60,7 +60,7 @@ This is migration-source drift, not evidence that the live database is broken. T
 | `20261118114620` | `allow_case_readers_to_log_evidence_access` |
 | `20261118114755` | `harden_evidence_file_integrity_and_custody_log` |
 
-## Safety constraints
+| `20261118212530` | `audit_contract_and_legal_matter_changes` (present in GitHub) |\n\n## Safety constraints
 
 Until the migration history is recovered:
 
@@ -82,8 +82,8 @@ Until the migration history is recovered:
 
 ## Verification
 
-- Supabase applied migration count: 59.
-- SQL migration files in GitHub `main`: 12.
+- Supabase applied migration count: 60.
+- SQL migration files in GitHub `main`: 13.
 - Applied versions without matching source file: 47.
 - Current-folder SQL files not yet applied: 0.
 - Supabase security advisor: no findings at the time of review.
