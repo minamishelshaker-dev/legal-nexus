@@ -19,7 +19,7 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Vercel project: `legal-nexus`; framework: Next.js.
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
-- Applied Supabase migration history: 53 entries, including audited membership role/status management and concurrency hardening.
+- Applied Supabase migration history: 56 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
 - Public base tables: 28; RLS enabled on all 28.
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
@@ -60,6 +60,28 @@ The following bilingual screens are present in the current production build:
 
 **Known limits:** invitation delivery is currently manual: the UI generates a link for the administrator to copy and send; no automatic invitation email is sent. Permanent member deletion and invitation re-send are not implemented; membership suspension is reversible and is used instead of deletion. The member list may show generic labels and short user IDs for other members because profile data is intentionally private under current RLS. Membership changes have been source- and database-verified but not exercised with real user accounts.
 
+### Legal request workflow — source implementation and database controls
+
+The current `main` branch includes a bilingual request-detail workflow:
+
+- `/workspace/requests/[id]`: detail view linked from the legal request list.
+- Legal team members can assign a request to an active organization member, set urgency and due date, update allowed workflow status, and record a resolution summary.
+- Requester-visible comments and internal legal-team comments are supported. The UI limits internal notes to legal team members and the assigned user.
+- Legal team members can add sequential approval steps by role. Approvers can approve or reject only when the previous steps are approved/skipped.
+- The UI prevents direct approval/rejection when an approval chain exists and blocks approval actions on terminal requests.
+- The request-type selector now uses the database's canonical `regulatory_query` value rather than the mismatched `regulatory_question`.
+
+Database hardening applied and verified:
+
+- Request assignment must target an active member of the same organization; cross-organization assignment is rejected by a database trigger.
+- RLS now prevents requesters from inserting comments marked internal. Internal comments are limited to legal-team roles and the assigned user.
+- Approval actions are denied on completed, cancelled or rejected requests.
+- Request status cannot be changed to approved while any approval step remains unresolved, or to rejected without a rejected approval step. Requests with approval chains cannot be completed while approvals remain pending.
+- The approval-state synchronizer treats approved and skipped steps as completed when deciding whether the chain is complete.
+- Supabase security and health advisors returned no findings after these migrations.
+
+**Important boundary:** the detail UI and database controls have been implemented, but no organization memberships or real legal requests currently exist in the production database. Assignment, comments, approval ordering and role access therefore remain untested end-to-end with real users.
+
 ### Account recovery implementation — source and production build verified
 
 The following bilingual account-recovery UI and callback routing are present in the current `main` branch and included in the latest READY production deployment:
@@ -79,18 +101,19 @@ The following bilingual account-recovery UI and callback routing are present in 
 1. **Authentication acceptance test is outstanding.** Signup source uses the canonical production callback URL `https://legal-nexus-hayah7.vercel.app/auth/callback`. This is appropriate for the production hostname; preview deployments do not automatically use their own callback URL.
 2. **Supabase Auth configuration is not verified.** The Site URL, redirect allowlist and email templates were not read or changed during this review. Confirm that the canonical production callback URL is allowlisted and that confirmation and recovery templates point to the callback route.
 3. **Membership workflow acceptance test is outstanding.** The database currently contains zero organization memberships, so the owner/admin/invitee flows could not be exercised against an existing real organization without creating test accounts and organization data. The role/status RPC was applied and its execute grants and Supabase security/health advisors were checked; end-to-end acceptance still needs real accounts.
-4. **Lockfile/dependency reproducibility needs follow-up.** Repository inventory did not show a package lockfile at the repository root or configured app root (`src/src`). A previous Vercel build emitted `Found lockfile missing swc dependencies`. The latest inspected build completed successfully, but no validated lockfile has been added. Do not hand-edit or invent lockfile entries; generate and validate the correct lockfile with the intended package manager before changing dependency resolution.
-5. Test member administration end-to-end with separate owner, admin and invitee accounts: create invitation, send copied link, accept with matching email, reject wrong-email and expired links, and revoke an unused invitation.
-6. Add automated invitation email delivery and member role editing/removal only after defining the notification and audit requirements.
-7. Test signup confirmation end-to-end, including the exact link generated by the configured Supabase email template, callback exchange, profile upsert and redirect to onboarding.
-8. Test password reset end-to-end: email delivery, callback exchange, recovery session, password update, and login with the new password. Also test expired and already-used links.
-9. Test resend-confirmation email delivery and verify that its link reaches the canonical callback.
-10. Test first-organization creation and verify the database trigger creates exactly one active owner membership.
-11. Add edit/detail screens for contracts and legal matters; current `CoreRecords` component primarily creates and lists records.
-12. Complete legal-request review, assignment, comments and approval actions in the UI; current `LegalRequests` component primarily submits and lists requests.
-13. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
-14. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
-15. Review the deployment's environment variables and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
+4. **Legal request workflow acceptance test is outstanding.** The detail UI and database integrity controls are implemented, but the production database currently has zero organization memberships and no legal-request records, so role-specific assignment, comments and sequential approvals have not been exercised with real users.
+5. **Lockfile/dependency reproducibility needs follow-up.** Repository inventory did not show a package lockfile at the repository root or configured app root (`src/src`). A previous Vercel build emitted `Found lockfile missing swc dependencies`. The latest inspected build completed successfully, but no validated lockfile has been added. Do not hand-edit or invent lockfile entries; generate and validate the correct lockfile with the intended package manager before changing dependency resolution.
+6. Test member administration end-to-end with separate owner, admin and invitee accounts: create invitation, send copied link, accept with matching email, reject wrong-email and expired links, and revoke an unused invitation.
+7. Add automated invitation email delivery and member role editing/removal only after defining the notification and audit requirements.
+8. Test signup confirmation end-to-end, including the exact link generated by the configured Supabase email template, callback exchange, profile upsert and redirect to onboarding.
+9. Test password reset end-to-end: email delivery, callback exchange, recovery session, password update, and login with the new password. Also test expired and already-used links.
+10. Test resend-confirmation email delivery and verify that its link reaches the canonical callback.
+11. Test first-organization creation and verify the database trigger creates exactly one active owner membership.
+12. Add edit/detail screens for contracts and legal matters; current `CoreRecords` component primarily creates and lists records.
+13. The legal-request detail workflow is now implemented; complete its end-to-end acceptance tests, including same-organization assignment, internal comment visibility, sequential approvals and terminal-state protections.
+14. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
+15. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
+16. Review the deployment's environment variables and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
 
 ## Manual acceptance checklist
 
@@ -112,6 +135,10 @@ The following bilingual account-recovery UI and callback routing are present in 
 - [ ] Ordinary member cannot access restricted HR/investigation records.
 - [ ] Cross-organization reads and writes are denied.
 - [ ] Contracts, matters and legal requests can be created and then correctly retrieved.
+- [ ] Legal request assignment rejects inactive and cross-organization users.
+- [ ] Requesters cannot insert internal comments or read internal notes.
+- [ ] Approval steps execute in order; direct status changes cannot bypass pending approvals.
+- [ ] Completed/cancelled/rejected requests cannot be reopened or approved.
 - [ ] Investigation evidence upload, download-link audit, SHA-256 and review events work.
 - [ ] Submitted investigation minutes cannot be silently edited.
 - [ ] No secrets or service-role keys are exposed to the browser.
