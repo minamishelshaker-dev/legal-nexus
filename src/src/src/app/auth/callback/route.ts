@@ -17,10 +17,7 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     verificationError = error;
   } else if (tokenHash && otpType && allowedOtpTypes.includes(otpType)) {
-    const { error } = await supabase.auth.verifyOtp({
-      token_hash: tokenHash,
-      type: otpType,
-    });
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
     verificationError = error;
   } else {
     verificationError = new Error("Missing or invalid authentication callback parameters");
@@ -39,21 +36,26 @@ export async function GET(request: Request) {
     return NextResponse.redirect(destination);
   }
 
-  const fullName = typeof user.user_metadata?.full_name === "string"
-    ? user.user_metadata.full_name.trim()
-    : null;
+  const recoveryRequested = otpType === "recovery" || url.searchParams.get("next") === "/reset-password";
 
-  const { error: profileError } = await supabase.from("user_profiles").upsert({
-    id: user.id,
-    full_name: fullName || null,
-  });
+  // Password recovery only needs a valid recovery session. Do not let an unrelated
+  // profile-upsert issue prevent the user from setting a new password.
+  if (!recoveryRequested) {
+    const fullName = typeof user.user_metadata?.full_name === "string"
+      ? user.user_metadata.full_name.trim()
+      : null;
 
-  if (profileError) {
-    const destination = new URL("/login", url.origin);
-    destination.searchParams.set("error", "profile");
-    return NextResponse.redirect(destination);
+    const { error: profileError } = await supabase.from("user_profiles").upsert({
+      id: user.id,
+      full_name: fullName || null,
+    });
+
+    if (profileError) {
+      const destination = new URL("/login", url.origin);
+      destination.searchParams.set("error", "profile");
+      return NextResponse.redirect(destination);
+    }
   }
 
-  const recoveryRequested = otpType === "recovery" || url.searchParams.get("next") === "/reset-password";
   return NextResponse.redirect(new URL(recoveryRequested ? "/reset-password" : "/workspace", url.origin));
 }
