@@ -3,7 +3,7 @@
 Project: `vzeaiqogntexdqggqyiy` (Legal Nexus)
 Snapshot date: 2026-11-18
 
-The following 50 migration versions are recorded as applied in the connected Supabase database. The last three evidence-storage migrations are preserved as executable SQL files in this repository. The original SQL bodies for the first three evidence-storage migrations and the earlier migrations are not present here and must be recovered before treating it as a reproducible infrastructure source.
+The following 51 migration versions are recorded as applied in the connected Supabase database. The last three evidence-storage migrations and the investigation-minutes hardening migration are preserved as executable SQL files in this repository. The original SQL bodies for the first three evidence-storage migrations and the earlier migrations are not present here and must be recovered before treating it as a reproducible infrastructure source.
 
 | Version | Migration |
 |---|---|
@@ -57,6 +57,7 @@ The following 50 migration versions are recorded as applied in the connected Sup
 | 20261118115344 | fix_evidence_access_link_audit_policy |
 | 20261118115645 | make_evidence_upload_and_review_atomic |
 | 20261118115713 | validate_evidence_upload_storage_object |
+| 20261118120500 | make_submitted_investigation_minutes_immutable |
 
 ## Current schema snapshot
 
@@ -64,6 +65,7 @@ The following 50 migration versions are recorded as applied in the connected Sup
 - Row-level security is enabled on all 28 tables.
 - The investigation evidence and evidence custody-event tables are empty; no evidence files have been uploaded.
 - No user, organization, employee, or test records were created as part of this repository import or evidence-storage work.
+- Submitted investigation minutes are now immutable: only an authorized legal leader can approve them without changing their content; corrections require a new version.
 
 ## Required follow-up
 
