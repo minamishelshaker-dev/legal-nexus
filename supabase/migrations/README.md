@@ -57,7 +57,7 @@ The following 51 migration versions are recorded as applied in the connected Sup
 | 20261118115344 | fix_evidence_access_link_audit_policy |
 | 20261118115645 | make_evidence_upload_and_review_atomic |
 | 20261118115713 | validate_evidence_upload_storage_object |
-| 20261118120500 | make_submitted_investigation_minutes_immutable |
+| 20261118121414 | make_submitted_investigation_minutes_immutable |
 
 ## Current schema snapshot
 
