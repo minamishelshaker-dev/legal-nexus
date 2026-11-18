@@ -30,7 +30,7 @@ export default function InvestigationDetail({investigationId,organizationId,user
    db.from("investigation_recommendations").select("*").eq("investigation_id",investigationId).order("created_at",{ascending:false}),
    db.from("investigation_decisions").select("*").eq("investigation_id",investigationId).order("decided_at",{ascending:false}),
    db.from("investigation_appeals").select("*").eq("investigation_id",investigationId).order("submitted_at",{ascending:false}),
-   db.from("organization_memberships").select("user_id,membership_role,user_profiles(full_name)").eq("organization_id",organizationId).eq("status","active")
+   db.from("organization_memberships").select("user_id,membership_role").eq("organization_id",organizationId).eq("status","active")
   ]);
   const setters=[setCaseAccess,setSessions,setStatements,setEvidence,setMinutes,setRecommendations,setDecisions,setAppeals,setMembers];
   for(let i=0;i<queries.length;i++){const q=queries[i] as any;if(q.error){setError(q.error.message);continue;}setters[i](i===0?(q.data||null):(q.data||[]));}
