@@ -34,6 +34,8 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
   const [inviteLink, setInviteLink] = useState("");
   const [canInvite, setCanInvite] = useState(false);
   const [canAppointAdmin, setCanAppointAdmin] = useState(false);
+  const [draftRoles, setDraftRoles] = useState<Record<string, string>>({});
+  const [busyMember, setBusyMember] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -112,13 +114,40 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
     catch { setError(ar ? "تعذر النسخ تلقائياً؛ انسخ الرابط يدوياً." : "Clipboard access failed; copy the link manually."); }
   }
 
+  async function updateMembership(member: Member, nextRole: string, nextStatus: string) {
+    setBusyMember(member.id); setError(""); setNotice("");
+    const { data, error: rpcError } = await supabase.rpc("update_org_membership", {
+      target_membership: member.id,
+      target_role: nextRole,
+      target_status: nextStatus,
+    });
+    if (rpcError || data !== true) {
+      setError(rpcError?.message || (ar ? "تعذر تحديث العضوية." : "Unable to update membership."));
+    } else {
+      setNotice(ar ? "تم تحديث صلاحيات العضو وحالته، وسُجل التغيير في سجل التدقيق." : "Member role and status updated; the change was recorded in the audit log.");
+      setDraftRoles((previous) => { const next = { ...previous }; delete next[member.id]; return next; });
+      await load();
+    }
+    setBusyMember(null);
+  }
+
   return <div className="module-layout">
     <section className="module-panel">
       <div className="panel-heading"><span className="auth-kicker">{ar ? "إدارة الوصول" : "ACCESS MANAGEMENT"}</span><h2>{ar ? "أعضاء المؤسسة" : "Organization members"}</h2><p>{ar ? "عرض العضويات النشطة والأدوار المسندة داخل المؤسسة." : "Review active memberships and assigned organization roles."}</p></div>
       <div className="record-mini-list">
         {members.map((member) => <article className="request-row" key={member.id}>
           <div className="request-row-main"><h3>{profiles[member.user_id] || (member.user_id === currentUserId ? (ar ? "حسابك" : "Your account") : (ar ? "عضو المؤسسة" : "Organization member"))}</h3><div className="request-meta"><span>{member.membership_role}</span><span>{member.status}</span></div><p>{member.user_id === currentUserId ? (ar ? "المستخدم الحالي" : "Current user") : (ar ? "معرّف العضو: " : "Member ID: ") + member.user_id.slice(0, 8)}</p></div>
-          <span className="status-pill">{member.membership_role}</span>
+          <div className="member-controls">
+            <span className="status-pill">{member.membership_role} · {member.status}</span>
+            {canInvite && member.membership_role !== "owner" && (canAppointAdmin || member.membership_role !== "admin") && <div className="member-control-actions">
+              <select aria-label={ar ? "دور العضو" : "Member role"} value={draftRoles[member.id] ?? member.membership_role} disabled={busyMember === member.id} onChange={(e) => setDraftRoles((previous) => ({ ...previous, [member.id]: e.target.value }))}>
+                {canAppointAdmin && <option value="admin">{ar ? "مسؤول المؤسسة" : "Organization admin"}</option>}
+                {roles.map(([value, arabic, english]) => <option key={value} value={value}>{ar ? arabic : english}</option>)}
+              </select>
+              <button type="button" className="secondary-button" disabled={busyMember === member.id || (draftRoles[member.id] ?? member.membership_role) === member.membership_role} onClick={() => void updateMembership(member, draftRoles[member.id] ?? member.membership_role, member.status)}>{busyMember === member.id ? (ar ? "جارٍ الحفظ..." : "Saving…") : (ar ? "حفظ الدور" : "Save role")}</button>
+              <button type="button" className="secondary-button" disabled={busyMember === member.id} onClick={() => void updateMembership(member, member.membership_role, member.status === "active" ? "suspended" : "active")}>{member.status === "active" ? (ar ? "إيقاف العضوية" : "Suspend") : (ar ? "إعادة التفعيل" : "Reactivate")}</button>
+            </div>}
+          </div>
         </article>)}
         {!loading && members.length === 0 && <div className="empty-state">{ar ? "لا توجد عضويات لعرضها." : "No memberships to display."}</div>}
       </div>
@@ -141,7 +170,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
     </section>
     {error && <p className="error-message" role="alert">{error}</p>}
     {notice && <p className="success-message" role="status">{notice}</p>}
-    <p className="field-note">{ar ? "ملاحظة أمنية: لا تشارك رابط الدعوة إلا مع البريد المحدد. قبول الدعوة يتطلب تسجيل الدخول بالبريد نفسه. إرسال البريد الآلي غير مفعّل في هذه المرحلة." : "Security note: share the invitation link only with the specified email. Acceptance requires signing in with that same email. Automated invitation email is not enabled in this phase."}</p>
+    <p className="field-note">{ar ? "يمكن للمالك والمسؤول تعديل أدوار الأعضاء وإيقاف العضوية أو إعادة تفعيلها. لا يمكن إيقاف المالك أو تغيير دوره، ولا يمكن للمسؤول إدارة عضوية مسؤول آخر. كل تغيير يُسجل في سجل التدقيق. " : "Owners and admins can change member roles and suspend/reactivate memberships. The owner cannot be suspended or demoted, and admins cannot manage another admin. Every change is recorded in the audit log. "}{ar ? "ملاحظة أمنية: لا تشارك رابط الدعوة إلا مع البريد المحدد. قبول الدعوة يتطلب تسجيل الدخول بالبريد نفسه. إرسال البريد الآلي غير مفعّل في هذه المرحلة." : "Security note: share the invitation link only with the specified email. Acceptance requires signing in with that same email. Automated invitation email is not enabled in this phase."}</p>
     <div><Link href="/workspace" className="back-link">{ar ? "العودة إلى مساحة العمل ←" : "← Back to workspace"}</Link></div>
   </div>;
 }
