@@ -43,9 +43,9 @@ The following bilingual account-recovery UI and callback routing have now been a
 - `/reset-password`: accept a new password after the recovery callback, with client-side confirmation and minimum-length checks.
 - `/resend-confirmation`: request a fresh signup confirmation email using Supabase `resend`.
 - Sign-in page links to both recovery actions.
-- Auth callback routes recovery links to `/reset-password` when the callback is marked as `type=recovery` or carries the controlled `next=/reset-password` query.
+- Auth callback routes recovery links to `/reset-password` when the callback is marked as `type=recovery` or carries the controlled `next=/reset-password` query. Recovery callbacks do not depend on profile upsert succeeding, so an unrelated profile-provisioning issue cannot block the password change.
 
-**These are source-code implementations only; email delivery, configured Supabase redirect allowlists/templates, recovery callback exchange, and successful password change still require a real test account.**
+**These are source-code implementations only; email delivery, configured Supabase redirect allowlists/templates, recovery callback exchange, and successful password change still require a real test account.** The Vercel build has compiled these new routes and passed its type-check/static page generation, but production deployment finalization is being verified separately.
 
 ### Known limitations / follow-up work
 
