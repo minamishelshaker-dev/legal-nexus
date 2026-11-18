@@ -22,6 +22,7 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
 - Applied Supabase migration history: 59 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
+- **Migration-source drift:** only 12 SQL migration files are currently present in GitHub, while 59 versions are applied in Supabase. The 47 missing historical source files are listed in [Database Migration Recovery](./DATABASE-MIGRATION-RECOVERY.md). Production is healthy, but a fresh database cannot yet be reproduced from this repository alone; do not reset or replay production migrations.
 - Public base tables: 28; RLS enabled on all 28.
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
@@ -52,7 +53,7 @@ The following bilingual screens are present in the current production build:
 - Owner/admin can create invitations using the existing `create_org_invitation` RPC, choose a supported role, and copy a generated invitation URL.
 - Owner/admin can view pending invitations and revoke them using `revoke_org_invitation`.
 - `/invite?token=...`: allows a signed-in user to accept an invitation through `accept_org_invitation`; the database function checks that the authenticated email matches the invited email, the token is valid and unexpired, and no membership already exists.
-- The invitation token is now preserved when an unauthenticated invitee opens login or signup. The requested invitation destination is carried through login, signup email confirmation and the auth callback, then restored after session establishment. Callback redirects are restricted to same-origin relative paths.
+- The invitation token is now preserved when an unauthenticated invitee opens login or signup. The requested invitation destination is carried through login, signup email confirmation and the auth callback, then restored after session establishment. Callback redirects are restricted to same-origin relative paths. This flow is present in the latest READY production deployment, but still requires a real mailbox acceptance test.
 - Only the owner is offered the Admin appointment option in the UI; the database RPC independently enforces owner-only admin appointment.
 - Owners and admins can change eligible member roles and suspend/reactivate memberships through the audited `update_org_membership` RPC; the owner cannot be changed through this operation.
 - Admins cannot manage other admins or promote any member to admin; users cannot change their own membership.
