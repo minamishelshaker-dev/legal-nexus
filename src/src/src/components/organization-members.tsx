@@ -57,8 +57,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
       ((profileRows || []) as Profile[]).forEach((p) => { if (p.full_name) map[p.id] = p.full_name; });
       setProfiles(map);
     } else setProfiles({});
-    const { data: current } = await supabase.auth.getUser();
-    const manager = rows.find((m) => m.user_id === current.data.user?.id && m.status === "active");
+    const manager = rows.find((m) => m.user_id === currentUserId && m.status === "active");
     const allowed = ["owner", "admin"].includes(manager?.membership_role || "");
     setCanInvite(allowed);
     setCanAppointAdmin(manager?.membership_role === "owner");
