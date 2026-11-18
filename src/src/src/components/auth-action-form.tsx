@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -11,9 +11,23 @@ export default function AuthActionForm({ mode, lang = "en" }: { mode: Mode; lang
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sessionReady, setSessionReady] = useState(mode !== "update-password");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (mode !== "update-password") return;
+    let active = true;
+    createClient().auth.getUser().then(({ data, error: authError }) => {
+      if (!active) return;
+      if (authError || !data.user) {
+        setError(ar ? "رابط الاستعادة غير صالح أو انتهت صلاحيته. اطلب رابطاً جديداً." : "The recovery link is invalid or expired. Please request a new link.");
+      }
+      setSessionReady(true);
+    });
+    return () => { active = false; };
+  }, [mode, ar]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,10 +37,13 @@ export default function AuthActionForm({ mode, lang = "en" }: { mode: Mode; lang
       if (mode === "update-password") {
         if (password.length < 8) throw new Error(ar ? "يجب ألا تقل كلمة المرور عن 8 أحرف." : "Password must be at least 8 characters.");
         if (password !== confirm) throw new Error(ar ? "كلمتا المرور غير متطابقتين." : "Passwords do not match.");
+        const { data: { user }, error: sessionError } = await supabase.auth.getUser();
+        if (sessionError || !user) throw new Error(ar ? "جلسة الاستعادة غير صالحة. اطلب رابطاً جديداً." : "Your recovery session is invalid. Request a new link.");
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
-        setMessage(ar ? "تم تحديث كلمة المرور. يمكنك الآن تسجيل الدخول." : "Password updated. You can now sign in.");
-        window.setTimeout(() => router.replace("/login"), 1200);
+        setMessage(ar ? "تم تحديث كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول." : "Password updated successfully. You can now sign in.");
+        router.replace("/login?password=updated");
+        router.refresh();
       } else if (mode === "request-reset") {
         const redirectTo = window.location.origin + "/auth/callback?next=/reset-password";
         const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
@@ -44,6 +61,7 @@ export default function AuthActionForm({ mode, lang = "en" }: { mode: Mode; lang
 
   const update = mode === "update-password";
   const resend = mode === "resend-confirmation";
+  if (update && !sessionReady) return <p role="status">{ar ? "جارٍ التحقق من رابط الاستعادة..." : "Verifying your recovery link..."}</p>;
   return <form className="auth-form" onSubmit={submit}>
     {!update && <label>{ar ? "البريد الإلكتروني" : "Email address"}<input type="email" required autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /></label>}
     {update && <>
@@ -52,6 +70,7 @@ export default function AuthActionForm({ mode, lang = "en" }: { mode: Mode; lang
     </>}
     {error && <p className="auth-error" role="alert">{error}</p>}
     {message && <p className="auth-success" role="status">{message}</p>}
-    <button className="auth-submit" type="submit" disabled={busy}>{busy ? (ar ? "يرجى الانتظار..." : "Please wait...") : update ? (ar ? "تحديث كلمة المرور" : "Update password") : resend ? (ar ? "إعادة إرسال رسالة التأكيد" : "Resend confirmation email") : (ar ? "إرسال رابط الاستعادة" : "Send reset link")}</button>
+    {update && error && <p className="auth-switch"><a href="/forgot-password">{ar ? "طلب رابط استعادة جديد" : "Request a new recovery link"}</a></p>}
+    <button className="auth-submit" type="submit" disabled={busy || (update && !!error)}>{busy ? (ar ? "يرجى الانتظار..." : "Please wait...") : update ? (ar ? "تحديث كلمة المرور" : "Update password") : resend ? (ar ? "إعادة إرسال رسالة التأكيد" : "Resend confirmation email") : (ar ? "إرسال رابط الاستعادة" : "Send reset link")}</button>
   </form>;
 }
