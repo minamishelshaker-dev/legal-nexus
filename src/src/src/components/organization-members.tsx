@@ -8,6 +8,31 @@ type Member = { id: string; user_id: string; membership_role: string; status: st
 type Profile = { id: string; full_name: string | null };
 type Invitation = { id: string; invited_email: string; membership_role: string; status: string; expires_at: string; created_at: string };
 
+function roleLabel(value: string, ar: boolean) {
+  const labels: Record<string, [string, string]> = {
+    owner: ["مالك المؤسسة", "Owner"],
+    admin: ["مسؤول المؤسسة", "Organization admin"],
+    legal_manager: ["مدير الإدارة القانونية", "Legal manager"],
+    lawyer: ["محامٍ", "Lawyer"],
+    contract_manager: ["مدير العقود", "Contract manager"],
+    hr_manager: ["مدير الموارد البشرية", "HR manager"],
+    hr_investigator: ["محقق موارد بشرية", "HR investigator"],
+    employee: ["موظف", "Employee"],
+    auditor: ["مراجع", "Auditor"],
+    member: ["عضو", "Member"],
+  };
+  return labels[value]?.[ar ? 0 : 1] || value;
+}
+
+function statusLabel(value: string, ar: boolean) {
+  const labels: Record<string, [string, string]> = {
+    active: ["نشط", "Active"],
+    suspended: ["موقوف", "Suspended"],
+    invited: ["مدعو", "Invited"],
+  };
+  return labels[value]?.[ar ? 0 : 1] || value;
+}
+
 const roles = [
   ["legal_manager", "مدير الإدارة القانونية", "Legal manager"],
   ["lawyer", "محامٍ", "Lawyer"],
@@ -136,9 +161,9 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
       <div className="panel-heading"><span className="auth-kicker">{ar ? "إدارة الوصول" : "ACCESS MANAGEMENT"}</span><h2>{ar ? "أعضاء المؤسسة" : "Organization members"}</h2><p>{ar ? "عرض العضويات النشطة والأدوار المسندة داخل المؤسسة." : "Review active memberships and assigned organization roles."}</p></div>
       <div className="record-mini-list">
         {members.map((member) => <article className="request-row" key={member.id}>
-          <div className="request-row-main"><h3>{profiles[member.user_id] || (member.user_id === currentUserId ? (ar ? "حسابك" : "Your account") : (ar ? "عضو المؤسسة" : "Organization member"))}</h3><div className="request-meta"><span>{member.membership_role}</span><span>{member.status}</span></div><p>{member.user_id === currentUserId ? (ar ? "المستخدم الحالي" : "Current user") : (ar ? "معرّف العضو: " : "Member ID: ") + member.user_id.slice(0, 8)}</p></div>
+          <div className="request-row-main"><h3>{profiles[member.user_id] || (member.user_id === currentUserId ? (ar ? "حسابك" : "Your account") : (ar ? "عضو المؤسسة" : "Organization member"))}</h3><div className="request-meta"><span>{roleLabel(member.membership_role, ar)}</span><span>{statusLabel(member.status, ar)}</span></div><p>{member.user_id === currentUserId ? (ar ? "المستخدم الحالي" : "Current user") : (ar ? "معرّف العضو: " : "Member ID: ") + member.user_id.slice(0, 8)}</p></div>
           <div className="member-controls">
-            <span className="status-pill">{member.membership_role} · {member.status}</span>
+            <span className="status-pill">{roleLabel(member.membership_role, ar)} · {statusLabel(member.status, ar)}</span>
             {canInvite && member.user_id !== currentUserId && member.membership_role !== "owner" && (canAppointAdmin || member.membership_role !== "admin") && <div className="member-control-actions">
               <select aria-label={ar ? "دور العضو" : "Member role"} value={draftRoles[member.id] ?? member.membership_role} disabled={busyMember === member.id} onChange={(e) => setDraftRoles((previous) => ({ ...previous, [member.id]: e.target.value }))}>
                 {canAppointAdmin && <option value="admin">{ar ? "مسؤول المؤسسة" : "Organization admin"}</option>}
@@ -164,7 +189,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
       </form> : <div className="empty-state">{ar ? "إنشاء الدعوات وإلغاؤها متاحان لمالك المؤسسة أو المسؤول فقط." : "Only the organization owner or an admin can create or revoke invitations."}</div>}
       <div className="panel-heading" style={{ marginTop: 34 }}><h2>{ar ? "الدعوات المعلقة" : "Pending invitations"}</h2></div>
       <div className="record-mini-list">
-        {invitations.map((inv) => <article className="request-row" key={inv.id}><div className="request-row-main"><h3>{inv.invited_email}</h3><div className="request-meta"><span>{inv.membership_role}</span><span>{ar ? "تنتهي: " : "Expires: "}{new Date(inv.expires_at).toLocaleDateString(ar ? "ar-EG" : "en-GB")}</span></div></div>{canInvite && <button type="button" className="secondary-button" onClick={() => void revokeInvitation(inv.id)}>{ar ? "إلغاء الدعوة" : "Revoke"}</button>}</article>)}
+        {invitations.map((inv) => <article className="request-row" key={inv.id}><div className="request-row-main"><h3>{inv.invited_email}</h3><div className="request-meta"><span>{roleLabel(inv.membership_role, ar)}</span><span>{ar ? "تنتهي: " : "Expires: "}{new Date(inv.expires_at).toLocaleDateString(ar ? "ar-EG" : "en-GB")}</span></div></div>{canInvite && <button type="button" className="secondary-button" onClick={() => void revokeInvitation(inv.id)}>{ar ? "إلغاء الدعوة" : "Revoke"}</button>}</article>)}
         {!loading && canInvite && invitations.length === 0 && <div className="empty-state">{ar ? "لا توجد دعوات معلقة." : "No pending invitations."}</div>}
       </div>
     </section>
