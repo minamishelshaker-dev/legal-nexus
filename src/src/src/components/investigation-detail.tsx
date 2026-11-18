@@ -72,7 +72,7 @@ export default function InvestigationDetail({investigationId,organizationId,user
  }
  async function openEvidenceFile(item:Row){
   if(!item.storage_path)return;setBusy(true);setError("");
-  const{error:logError}=await db.from("investigation_evidence_events").insert({investigation_id:investigationId,evidence_id:item.id,event_type:"file_accessed",actor_user_id:userId,details:{storage_path:item.storage_path}});
+  const{error:logError}=await db.from("investigation_evidence_events").insert({investigation_id:investigationId,evidence_id:item.id,event_type:"file_access_link_issued",actor_user_id:userId,details:{storage_path:item.storage_path}});
   if(logError){setError(logError.message);setBusy(false);return;}
   const{data,error:signedError}=await db.storage.from("investigation-evidence-private").createSignedUrl(item.storage_path,60);
   if(signedError||!data?.signedUrl)setError(signedError?.message||"Could not create a secure download link.");
