@@ -21,9 +21,18 @@ export default function OnboardingForm() {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) throw new Error("Your session has expired. Please sign in again.");
 
+      const baseSlug = name
+        .trim()
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 48) || "organization";
+      const slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`;
+
       const { error: insertError } = await supabase
         .from("organizations")
-        .insert({ name: name.trim(), created_by: user.id });
+        .insert({ name: name.trim(), slug, created_by: user.id });
       if (insertError) throw insertError;
 
       router.replace("/workspace");
