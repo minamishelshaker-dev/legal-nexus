@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 type Mode="login"|"signup";
 export default function AuthForm({mode,lang="en",returnTo}:{mode:Mode;lang?:"ar"|"en";returnTo?:string}){
- const ar=lang==="ar";const safeReturnTo=returnTo&&returnTo.startsWith("/")&&!returnTo.startsWith("//")&&!returnTo.includes("\\\\")?returnTo:null;
+ const ar=lang==="ar";const safeReturnTo=returnTo&&returnTo.startsWith("/")&&!returnTo.startsWith("//")&&!returnTo.includes("\\")?returnTo:null;
  const [email,setEmail]=useState("");const [password,setPassword]=useState("");const [fullName,setFullName]=useState("");const [busy,setBusy]=useState(false);const [message,setMessage]=useState("");const [error,setError]=useState("");const router=useRouter();
  async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();setBusy(true);setError("");setMessage("");const supabase=createClient();try{
   if(mode==="login"){const {error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;router.replace(safeReturnTo||"/workspace");router.refresh();return;}
