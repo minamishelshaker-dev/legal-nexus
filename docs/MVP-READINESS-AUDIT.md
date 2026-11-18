@@ -21,7 +21,7 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Vercel project: `legal-nexus`; framework: Next.js.
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
-- Applied Supabase migration history: 57 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
+- Applied Supabase migration history: 59 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
 - Public base tables: 28; RLS enabled on all 28.
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
@@ -77,6 +77,7 @@ Database hardening applied and verified:
 
 - Request assignment must target an active member of the same organization; cross-organization assignment is rejected by a database trigger.
 - RLS now prevents requesters from inserting comments marked internal. Internal comments are limited to legal-team roles and the assigned user.
+- Legal-request reads now require an active membership in the owning organization, including for requesters and assigned users; a suspended member loses request access.
 - Approval actions are denied on completed, cancelled or rejected requests.
 - Request status cannot be changed to approved while any approval step remains unresolved, or to rejected without a rejected approval step. Requests with approval chains cannot be completed while approvals remain pending.
 - The approval-state synchronizer treats approved and skipped steps as completed when deciding whether the chain is complete.
@@ -140,6 +141,7 @@ The following bilingual account-recovery UI and callback routing are present in 
 - [ ] Contracts, matters and legal requests can be created and then correctly retrieved.
 - [ ] Legal request assignment rejects inactive and cross-organization users.
 - [ ] Requesters cannot insert internal comments or read internal notes.
+- [ ] Suspended members cannot access legal requests even if they originally requested or were assigned to one.
 - [ ] Approval steps execute in order; new steps cannot be inserted out of sequence or pre-approved, and direct status changes cannot bypass pending approvals.
 - [ ] Completed/cancelled/rejected requests cannot be reopened or approved.
 - [ ] Investigation evidence upload, download-link audit, SHA-256 and review events work.
