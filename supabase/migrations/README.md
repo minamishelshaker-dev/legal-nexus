@@ -3,7 +3,7 @@
 Project: `vzeaiqogntexdqggqyiy` (Legal Nexus)
 Snapshot date: 2026-11-18
 
-The following 48 migration versions are recorded as applied in the connected Supabase database. The final evidence access-policy migration is preserved as an executable SQL file in this repository. The original SQL bodies for the other migrations, including the first three evidence-storage migrations, are not present in this repository and must be recovered before treating it as a reproducible infrastructure source.
+The following 50 migration versions are recorded as applied in the connected Supabase database. The last three evidence-storage migrations are preserved as executable SQL files in this repository. The original SQL bodies for the first three evidence-storage migrations and the earlier migrations are not present here and must be recovered before treating it as a reproducible infrastructure source.
 
 | Version | Migration |
 |---|---|
@@ -55,6 +55,8 @@ The following 48 migration versions are recorded as applied in the connected Sup
 | 20261118114620 | allow_case_readers_to_log_evidence_access |
 | 20261118114755 | harden_evidence_file_integrity_and_custody_log |
 | 20261118115344 | fix_evidence_access_link_audit_policy |
+| 20261118115645 | make_evidence_upload_and_review_atomic |
+| 20261118115713 | validate_evidence_upload_storage_object |
 
 ## Current schema snapshot
 
@@ -65,4 +67,4 @@ The following 48 migration versions are recorded as applied in the connected Sup
 
 ## Required follow-up
 
-Recover the original SQL migration files from the original development workspace or an authenticated Supabase CLI/database source before treating this repository as a reproducible infrastructure source. The three initial evidence-storage migrations were applied directly to the connected database; their SQL bodies should be recovered and committed as executable migration files before using this repository to provision another environment. Do not blindly replay schema SQL against the existing production database.
+Recover the original SQL migration files from the original development workspace or an authenticated Supabase CLI/database source before treating this repository as a reproducible infrastructure source. The first three evidence-storage migrations were applied directly to the connected database; their SQL bodies should be recovered and committed as executable migration files before using this repository to provision another environment. Do not blindly replay schema SQL against the existing production database.
