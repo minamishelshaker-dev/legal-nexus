@@ -20,7 +20,7 @@ export default function LegalRequestDetail({requestId,organizationId,userId,memb
  const [assignedTo,setAssignedTo]=useState(""),[dueAt,setDueAt]=useState(""),[urgency,setUrgency]=useState("normal"),[status,setStatus]=useState("submitted"),[resolution,setResolution]=useState("");
  const canManage=legalRoles.includes(membershipRole);
  const canCommentInternally=canManage||request?.assigned_to===userId;
- const availableRoles=useMemo(()=>[...new Set(members.filter(m=>m.status==="active").map(m=>m.membership_role).filter(r=>roles.includes(r)))],[members]);
+ const availableRoles=useMemo(()=>[...new Set(members.filter(m=>m.status==="active").map(m=>m.membership_role).filter(r=>roles.includes(r)&&r!=="contract_manager"))],[members]);
  const load=useCallback(async()=>{
   setLoading(true);setError("");
   const [rr,mr,cr,arows]=await Promise.all([
@@ -53,8 +53,7 @@ export default function LegalRequestDetail({requestId,organizationId,userId,memb
   const {error:e1}=await supabase.from("legal_request_approvals").update({status:d,decision_note:decisionNotes[a.id]?.trim()||null}).eq("id",a.id).eq("status","pending");
   if(e1)setError(e1.message);else{setNotice(ar?"تم تسجيل قرار الموافقة.":"Approval decision recorded.");await load();}setSaving(false);
  }
- const transitions:Record<string,string[]>={submitted:["under_review","awaiting_information","cancelled"],under_review:["awaiting_information","completed","cancelled"],awaiting_information:["under_review","cancelled"],approved:["completed","cancelled"]};
- if(request&&request.status==="under_review"&&approvals.length===0)transitions.under_review=["awaiting_information","approved","rejected","completed","cancelled"];
+ const transitions:Record<string,string[]>={submitted:["under_review","awaiting_information","cancelled"],under_review:approvals.length===0?["awaiting_information","approved","rejected","completed","cancelled"]:["awaiting_information","cancelled"],awaiting_information:["under_review","cancelled"],approved:["completed","cancelled"]};
  const allowed=[request?.status||"submitted",...(transitions[request?.status||""]||[])];
  const canAct=(a:Approval)=>!["completed","cancelled","rejected"].includes(request?.status||"")&&a.status==="pending"&&(a.approver_user_id===userId||(!!a.approver_role&&a.approver_role===membershipRole)||["owner","admin","legal_manager"].includes(membershipRole))&&!approvals.some(p=>p.step_no<a.step_no&&!["approved","skipped"].includes(p.status));
  if(loading)return <div className="module-panel"><p className="muted-note">{ar?"جارٍ تحميل تفاصيل الطلب...":"Loading request details…"}</p></div>;
