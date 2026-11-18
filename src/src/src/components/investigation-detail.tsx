@@ -63,10 +63,8 @@ export default function InvestigationDetail({investigationId,organizationId,user
   if(uploadError){setError((ar?"تم إنشاء سجل الدليل لكن تعذر رفع الملف: ":"Evidence record created, but file upload failed: ")+uploadError.message);await load();setBusy(false);return;}
   const digest=await crypto.subtle.digest("SHA-256",await file.arrayBuffer());
   const sha256=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
-  const{error:linkError}=await db.from("investigation_evidence").update({storage_path:path,mime_type:mime,file_size_bytes:file.size,sha256,uploaded_at:new Date().toISOString(),uploaded_by:userId}).eq("id",record.id);
-  if(linkError){setError((ar?"تم رفع الملف لكن تعذر ربط بياناته بسجل الدليل: ":"File uploaded, but linking its metadata failed: ")+linkError.message);await load();setBusy(false);return;}
-  const{error:eventError}=await db.from("investigation_evidence_events").insert({investigation_id:investigationId,evidence_id:record.id,event_type:"file_uploaded",actor_user_id:userId,details:{file_name:file.name,mime_type:mime,file_size_bytes:file.size,sha256}});
-  if(eventError)setError((ar?"تم رفع الملف وربطه، لكن تعذر تسجيل حدث سلسلة الحيازة: ":"File uploaded and linked, but custody event logging failed: ")+eventError.message);
+  const{error:finalizeError}=await db.rpc("finalize_investigation_evidence_upload",{p_evidence_id:record.id,p_storage_path:path,p_mime_type:mime,p_file_size_bytes:file.size,p_sha256:sha256,p_file_name:file.name});
+  if(finalizeError)setError((ar?"تم رفع الملف لكن تعذر تثبيت بياناته وسجل الحيازة: ":"File uploaded, but its metadata and custody event could not be finalized: ")+finalizeError.message);
   else setNotice(ar?"تم رفع الدليل وتسجيل بصمته الرقمية في سجل الحيازة.":"Evidence uploaded; its SHA-256 fingerprint was recorded in the custody log.");
   setEvidenceTitle("");setEvidenceDescription("");setEvidenceFile(null);await load();setBusy(false);
  }
@@ -82,11 +80,8 @@ export default function InvestigationDetail({investigationId,organizationId,user
  async function updateEvidenceStatus(item:Row){
   const next=evidenceStatusDraft[item.id];if(!next||next===item.status)return;
   setBusy(true);setError("");setNotice("");
-  const{error:updateError}=await db.from("investigation_evidence").update({status:next}).eq("id",item.id).eq("status",item.status);
-  if(updateError){setError(updateError.message);setBusy(false);return;}
-  const eventType=next==="under_review"?"reviewed":next;
-  const{error:eventError}=await db.from("investigation_evidence_events").insert({investigation_id:investigationId,evidence_id:item.id,event_type:eventType,actor_user_id:userId,details:{previous_status:item.status,new_status:next}});
-  if(eventError)setError((ar?"تم تحديث حالة الدليل لكن تعذر تسجيل حدث المراجعة: ":"Evidence status updated, but the review event could not be logged: ")+eventError.message);
+  const{error:updateError}=await db.rpc("review_investigation_evidence",{p_evidence_id:item.id,p_new_status:next});
+  if(updateError)setError(updateError.message);
   else setNotice(ar?"تم تحديث حالة الدليل وتسجيل المراجعة.":"Evidence status updated and review logged.");
   await load();setBusy(false);
  }
