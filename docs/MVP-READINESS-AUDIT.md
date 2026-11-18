@@ -14,7 +14,7 @@ The latest code-bearing production deployment is READY:
 - Contract and matter edit forms validate date consistency, required closure dates and three-letter currency codes.
 - The build still reports a non-blocking warning about missing SWC dependencies in the lockfile; no validated package lockfile has been committed.
 
-The latest application code is live on the production alias. Subsequent commits after this deployment, if any, are documentation-only.
+The latest deployed application remains the commit above. GitHub `main` now contains a newer application commit (`c385c6a38f4897abc92be21ce6eadc672d4f2e58`) adding the Documents & Obligations UI, but its Vercel check failed with `Deployment rate limited — retry in 24 hours`. That UI commit is not live; the previous READY deployment remains active until the rate limit resets and a new build succeeds.
 
 This is an infrastructure and source review, not a completed end-to-end acceptance test. The production database currently has zero organization memberships, so no owner/admin/member/invitee workflow has been exercised with real organization users. Signup, email confirmation, login, logout, password recovery and organization creation also remain pending live acceptance testing.
 
@@ -26,7 +26,7 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Applied Supabase migration history: 63 entries, including audited membership lifecycle, same-organization request assignment, internal-comment visibility and approval-state integrity.
 - **Migration-source drift:** only 16 SQL migration files are currently present in GitHub, while 63 versions are applied in Supabase. The 47 missing historical source files are listed in [Database Migration Recovery](./DATABASE-MIGRATION-RECOVERY.md). Production is healthy, but a fresh database cannot yet be reproduced from this repository alone; do not reset or replay production migrations.
 - Public base tables: 28; RLS enabled on all 28.
-- Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
+- Private Storage buckets: `employee-records-private`, `investigation-evidence-private` and `organization-documents-private`; all are non-public. Each has a 50 MiB per-file limit.
 - Security advisor: no findings after the membership-management migrations.
 - Health advisor: no findings.
 - Vercel runtime error clusters: none found in the previously selected 24-hour window.
@@ -78,7 +78,18 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Added an `obligations` table with due date, type, status, priority, responsible user and optional contract/matter reference. RLS limits visibility and changes by organization and legal role; triggers enforce active same-organization assignees and source-record ownership.
 - Document and obligation create/update/delete operations are connected to the generic audit trigger.
 
-**Boundary:** the database foundation and private bucket are applied, but the user-facing document upload/download screen and obligations board have not yet been implemented. There are no memberships, documents or obligations in production, so storage and workflow behavior has not been exercised with real users.
+**Boundary:** the database foundation and private bucket are applied. The bilingual document repository and obligations board have now been added to GitHub `main` in commit `c385c6a`, but Vercel rate-limited that commit and the UI is not yet deployed. There are no memberships, documents or obligations in production, so storage and workflow behavior has not been exercised with real users.
+
+### Documents and obligations UI — source committed, deployment pending
+
+- `/workspace/documents` provides a bilingual upload form, classification selection, optional contract/matter association, a registered-document list, a retry path if metadata creation succeeds but file upload fails, and short-lived signed download links.
+- The client logs a document access request before generating the five-minute signed URL. Storage RLS independently enforces the private bucket path and classification.
+- `/workspace/obligations` provides a bilingual obligation creation/list workflow with due date, type, priority, related contract/matter and status updates. New obligations are assigned to the authenticated creator.
+- Both modules are linked from the workspace home page.
+- Source commit: `c385c6a38f4897abc92be21ce6eadc672d4f2e58`.
+- Vercel's GitHub status for that commit is `failure` with description `Deployment rate limited — retry in 24 hours`. No build result exists for this commit yet.
+
+**Boundary:** these screens are committed source, not production features yet. They must pass a fresh production build after the rate limit resets, then be tested with a real organization member and private files.
 
 ### Organization membership and invitation UI — source and production build verified
 
@@ -157,7 +168,9 @@ The following bilingual account-recovery UI and callback routing are present in 
 15. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
 16. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
 17. Review the deployment's environment variables
-18. Build the Documents & Obligations UI: secure file upload/retry, signed downloads with access logging, classification display, and obligation creation/update views. and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
+17. Review the deployment's environment variables and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
+18. After the Vercel deployment limit resets, build and deploy commit `c385c6a` and verify `/workspace/documents` and `/workspace/obligations` in the production route output.
+19. Complete document upload/retry/download and obligation create/status acceptance tests using a real test organization.
 
 ## Manual acceptance checklist
 
@@ -197,4 +210,4 @@ The following bilingual account-recovery UI and callback routing are present in 
 
 ## Release decision
 
-**Not yet acceptance-tested as a complete MVP.** The production infrastructure and security baseline are present; account recovery, the bilingual organization invitation/member UI, legal-request details, and contract/legal-matter detail/edit screens are implemented and deployed. A live user acceptance pass, confirmation of Supabase Auth configuration, and completion of the workflow gaps above are still required before presenting the system as fully operational. Do not seed fake customer records in the production database for testing.
+**Not yet acceptance-tested as a complete MVP.** The production infrastructure and security baseline are present; account recovery, the bilingual organization invitation/member UI, legal-request details, and contract/legal-matter detail/edit screens are implemented and deployed. The document repository and obligations UI are committed but await deployment after Vercel's daily rate limit resets. A live user acceptance pass, confirmation of Supabase Auth configuration, and completion of the workflow gaps above are still required before presenting the system as fully operational. Do not seed fake customer records in the production database for testing.
