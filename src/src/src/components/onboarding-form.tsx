@@ -1,59 +1,6 @@
 "use client";
-
-import { useState } from "react";
-import type { FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-
-export default function OnboardingForm() {
-  const [name, setName] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const router = useRouter();
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setBusy(true);
-    setError("");
-
-    try {
-      const supabase = createClient();
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) throw new Error("Your session has expired. Please sign in again.");
-
-      const baseSlug = name
-        .trim()
-        .toLowerCase()
-        .normalize("NFKD")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")
-        .slice(0, 48) || "organization";
-      const slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`;
-
-      const { error: insertError } = await supabase
-        .from("organizations")
-        .insert({ name: name.trim(), slug, created_by: user.id });
-      if (insertError) throw insertError;
-
-      router.replace("/workspace");
-      router.refresh();
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Unable to create the organization. Please try again.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <form className="auth-form" onSubmit={submit}>
-      <label>
-        Organization name
-        <input required minLength={2} maxLength={160} value={name} onChange={(event) => setName(event.target.value)} placeholder="Your company or institution" />
-      </label>
-      {error && <p className="auth-error" role="alert">{error}</p>}
-      <button className="auth-submit" type="submit" disabled={busy}>
-        {busy ? "Creating workspace..." : "Create organization"}
-      </button>
-    </form>
-  );
+import {useState} from "react";import type {FormEvent} from "react";import {useRouter} from "next/navigation";import {createClient} from "@/lib/supabase/client";
+export default function OnboardingForm({lang="en"}:{lang?:"ar"|"en"}){const ar=lang==="ar";const[name,setName]=useState("");const[busy,setBusy]=useState(false);const[error,setError]=useState("");const router=useRouter();
+ async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();setBusy(true);setError("");try{const supabase=createClient();const{data:{user},error:userError}=await supabase.auth.getUser();if(userError||!user)throw new Error(ar?"انتهت صلاحية الجلسة. سجل الدخول مرة أخرى.":"Your session has expired. Please sign in again.");const base=name.trim().toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48)||"organization";const slug=base+"-"+crypto.randomUUID().slice(0,8);const{error}=await supabase.from("organizations").insert({name:name.trim(),slug,created_by:user.id});if(error)throw error;router.replace("/workspace");router.refresh();}catch(e){setError(e instanceof Error?e.message:(ar?"تعذر إنشاء المؤسسة. حاول مرة أخرى.":"Unable to create the organization. Please try again."));}finally{setBusy(false);}}
+ return <form className="auth-form" onSubmit={submit}><label>{ar?"اسم الشركة أو المؤسسة":"Organization name"}<input required minLength={2} maxLength={160} value={name} onChange={e=>setName(e.target.value)} placeholder={ar?"اسم شركتك أو مؤسستك":"Your company or institution"}/></label>{error&&<p className="auth-error" role="alert">{error}</p>}<button className="auth-submit" type="submit" disabled={busy}>{busy?(ar?"جارٍ إنشاء مساحة العمل...":"Creating workspace..."):(ar?"إنشاء المؤسسة":"Create organization")}</button></form>;
 }
