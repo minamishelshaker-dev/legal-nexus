@@ -22,6 +22,7 @@ export default function InvestigationDetail({investigationId,organizationId,user
  const load=useCallback(async()=>{
   setError("");
   const queries=await Promise.all([
+   db.from("administrative_investigations").select("investigator_user_id,decision_maker_user_id").eq("id",investigationId).maybeSingle(),
    db.from("investigation_sessions").select("*").eq("investigation_id",investigationId).order("scheduled_at",{ascending:false}),
    db.from("investigation_statements").select("*").eq("investigation_id",investigationId).order("created_at",{ascending:false}),
    db.from("investigation_evidence").select("*").eq("investigation_id",investigationId).order("created_at",{ascending:false}),
