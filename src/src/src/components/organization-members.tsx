@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Member = { id: string; user_id: string; membership_role: string; status: string; created_at: string };
@@ -22,7 +21,6 @@ const roles = [
 
 export default function OrganizationMembers({ organizationId, lang = "en", currentUserId }: { organizationId: string; lang?: "ar" | "en"; currentUserId: string }) {
   const ar = lang === "ar";
-  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [members, setMembers] = useState<Member[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
@@ -35,6 +33,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
   const [notice, setNotice] = useState("");
   const [inviteLink, setInviteLink] = useState("");
   const [canInvite, setCanInvite] = useState(false);
+  const [canAppointAdmin, setCanAppointAdmin] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -51,9 +50,9 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
     }
     const rows = (membershipRows || []) as Member[];
     setMembers(rows);
-    const ids = [...new Set(rows.map((m) => m.user_id))];
+    const ids = rows.some((m) => m.user_id === currentUserId) ? [currentUserId] : [];
     if (ids.length) {
-      const { data: profileRows } = await supabase.from("user_profiles").select("id,full_name").in("id", ids);
+      const { data: profileRows } = await supabase.from("user_profiles").select("id,full_name").eq("id", currentUserId);
       const map: Record<string, string> = {};
       ((profileRows || []) as Profile[]).forEach((p) => { if (p.full_name) map[p.id] = p.full_name; });
       setProfiles(map);
@@ -62,6 +61,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
     const manager = rows.find((m) => m.user_id === current.data.user?.id && m.status === "active");
     const allowed = ["owner", "admin"].includes(manager?.membership_role || "");
     setCanInvite(allowed);
+    setCanAppointAdmin(manager?.membership_role === "owner");
     if (allowed) {
       const { data: inviteRows, error: inviteError } = await supabase
         .from("organization_invitations")
@@ -73,7 +73,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
       setInvitations((inviteRows || []) as Invitation[]);
     } else setInvitations([]);
     setLoading(false);
-  }, [ar, organizationId, supabase]);
+  }, [ar, currentUserId, organizationId, supabase]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -130,7 +130,7 @@ export default function OrganizationMembers({ organizationId, lang = "en", curre
       <div className="panel-heading"><span className="auth-kicker">{ar ? "دعوات الفريق" : "TEAM INVITATIONS"}</span><h2>{ar ? "دعوة عضو جديد" : "Invite a new member"}</h2><p>{ar ? "أنشئ دعوة مرتبطة ببريد إلكتروني ودور محدد. صلاحية الرابط 7 أيام." : "Create an invitation tied to an email address and role. Links expire after 7 days."}</p></div>
       {canInvite ? <form className="module-form" onSubmit={createInvitation}>
         <label>{ar ? "البريد الإلكتروني للمدعو" : "Invitee email"}<input type="email" required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" /></label>
-        <label>{ar ? "الدور داخل المؤسسة" : "Organization role"}<select value={role} onChange={(e) => setRole(e.target.value)}>{roles.map(([value, arabic, english]) => <option key={value} value={value}>{ar ? arabic : english}</option>)}</select></label>
+        <label>{ar ? "الدور داخل المؤسسة" : "Organization role"}<select value={role} onChange={(e) => setRole(e.target.value)}>{canAppointAdmin && <option value="admin">{ar ? "مسؤول المؤسسة" : "Organization admin"}</option>}{roles.map(([value, arabic, english]) => <option key={value} value={value}>{ar ? arabic : english}</option>)}</select></label>
         <div className="form-actions"><button className="primary" disabled={saving || !email.trim()}>{saving ? (ar ? "جارٍ الإنشاء..." : "Creating…") : (ar ? "إنشاء دعوة" : "Create invitation")}</button></div>
         {inviteLink && <div className="invite-link-box"><label>{ar ? "رابط الدعوة — يظهر لك الآن لنسخه وإرساله" : "Invitation link — copy and send it now"}<input readOnly value={inviteLink} onFocus={(e) => e.currentTarget.select()} /></label><button type="button" className="secondary-button" onClick={copyLink}>{ar ? "نسخ الرابط" : "Copy invitation link"}</button></div>}
       </form> : <div className="empty-state">{ar ? "إنشاء الدعوات وإلغاؤها متاحان لمالك المؤسسة أو المسؤول فقط." : "Only the organization owner or an admin can create or revoke invitations."}</div>}
