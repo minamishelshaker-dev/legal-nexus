@@ -2,14 +2,20 @@
 
 ## Executive status
 
-The production deployment is READY and points to the GitHub `main` branch. The latest verified production deployment was built from commit `450a888b84fad1e3471a5c4e37f81cdcde3782e2` and includes the readiness audit. The deployment completed successfully with type-checking and static route generation passing.
+The production deployment is READY and points to GitHub `main`. Latest verified production deployment:
 
-This is an infrastructure and source review, not a completed end-to-end acceptance test. No test user credentials were available to the audit, so signup, email confirmation, login, logout, organization creation and role-specific workflows have not been exercised as a real user.
+- Deployment: `dpl_AXgnbUUmCtu6tpcVJ927JjUXKvB1`
+- Commit: `d84567ab993f977a78fcb00e3f4a2a39c3cf9260`
+- Commit message: `Remove unused duplicate account recovery form`
+- Production alias: https://legal-nexus-hayah7.vercel.app
+- Framework: Next.js
+- Build completed and deployment reached READY. The build output lists all 17 static-generation steps complete and includes the account-recovery routes.
+
+This is an infrastructure and source review, not a completed end-to-end acceptance test. No test user credentials were available to the audit, so signup, email confirmation, login, logout, password recovery, organization creation and role-specific workflows have not been exercised as a real user.
 
 ## Verified infrastructure
 
 - Vercel project: `legal-nexus`; framework: Next.js.
-- Production alias: `https://legal-nexus-hayah7.vercel.app`.
 - GitHub repository: `minamishelshaker-dev/legal-nexus`; branch: `main`.
 - Supabase project ref: `vzeaiqogntexdqggqyiy`; status: `ACTIVE_HEALTHY`; region: `eu-central-1`.
 - Applied Supabase migration history: 51 entries.
@@ -17,7 +23,7 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Private Storage buckets: `employee-records-private` and `investigation-evidence-private`; both are non-public and have a 50 MiB per-file limit.
 - Security advisor: no findings.
 - Health advisor: no findings.
-- Vercel runtime error clusters: none found in the selected 24-hour window.
+- Vercel runtime error clusters: none found in the previously selected 24-hour window.
 - Performance advisor: 103 unused-index informational findings. Given the currently empty/low-traffic application state, do not drop these indexes solely on this signal; reassess after representative production usage.
 
 ## Source review
@@ -35,43 +41,47 @@ This is an infrastructure and source review, not a completed end-to-end acceptan
 - Administrative investigation intake and a multi-tab case-detail interface for sessions, statements, evidence, minutes, recommendations, decisions and appeals.
 - Private investigation evidence upload flow records SHA-256 and custody events through a database RPC.
 
-### Account recovery implementation update (18 November 2026)
+### Account recovery implementation — source and production build verified
 
-The following bilingual account-recovery UI and callback routing have now been added to the `main` branch:
+The following bilingual account-recovery UI and callback routing are present in the current `main` branch and included in the latest READY production deployment:
 
-- `/forgot-password`: request a reset email using Supabase `resetPasswordForEmail`.
-- `/reset-password`: accept a new password after the recovery callback, with client-side confirmation and minimum-length checks.
-- `/resend-confirmation`: request a fresh signup confirmation email using Supabase `resend`.
-- Sign-in page links to both recovery actions.
-- Auth callback routes recovery links to `/reset-password` when the callback is marked as `type=recovery` or carries the controlled `next=/reset-password` query. Recovery callbacks do not depend on profile upsert succeeding, so an unrelated profile-provisioning issue cannot block the password change.
+- `/forgot-password`: requests a reset email using Supabase `resetPasswordForEmail`.
+- `/reset-password`: checks for an authenticated recovery session, validates matching passwords and updates the password through Supabase `updateUser`.
+- `/resend-confirmation`: requests a fresh signup confirmation email using Supabase `resend`.
+- The sign-in page links to password recovery and confirmation resend.
+- The callback routes recovery links to `/reset-password` when the OTP type is `recovery` or the callback includes the controlled `next=/reset-password` parameter.
+- Recovery callbacks do not depend on profile upsert succeeding, so an unrelated profile-provisioning issue cannot block the password change.
+- The latest Vercel build output lists `/forgot-password`, `/reset-password`, `/resend-confirmation` and `/auth/callback`, and completed static generation (17/17).
 
-**These are source-code implementations only; email delivery, configured Supabase redirect allowlists/templates, recovery callback exchange, and successful password change still require a real test account.** The Vercel build has compiled these new routes and passed its type-check/static page generation, but production deployment finalization is being verified separately.
+**Important boundary:** source implementation and successful deployment do not prove that Supabase sends the emails, that the configured redirect allowlist and email templates are correct, or that a user can complete the recovery flow. These still require a real test account and mailbox.
 
-### Known limitations / follow-up work
+## Known limitations / follow-up work
 
-1. **Authentication acceptance test is outstanding.** Source inspection confirms the signup callback is hardcoded to `https://legal-nexus-hayah7.vercel.app`; this is suitable for the canonical production hostname but preview deployments will not automatically receive their own callback URL. Keep Supabase Site URL set to the canonical production domain and explicitly allow the production callback URL. Add local/preview redirect patterns only if those environments are intended to be used.
-2. **Password recovery is not complete.** No password-reset page or resend-confirmation UI was found. Although the callback route accepts the `recovery` OTP type, it currently follows the generic success path to `/workspace`; a recovery callback must instead lead to a dedicated password-update screen. Do not represent password recovery as implemented until that path is added and tested.
-3. **Lockfile warning remains unresolved.** The Vercel build emitted `Found lockfile missing swc dependencies`. The GitHub repository inventory did not show a package lockfile at the repository root or under the configured app root (`src/src`). Do not hand-edit or invent lockfile entries; generate and validate the correct lockfile with the selected package manager before changing dependency resolution.
+1. **Authentication acceptance test is outstanding.** Signup source uses the canonical production callback URL `https://legal-nexus-hayah7.vercel.app/auth/callback`. This is appropriate for the production hostname; preview deployments do not automatically use their own callback URL.
+2. **Supabase Auth configuration is not verified.** The Site URL, redirect allowlist and email templates were not read or changed during this review. Confirm that the canonical production callback URL is allowlisted and that confirmation and recovery templates point to the callback route.
+3. **Lockfile/dependency reproducibility needs follow-up.** Repository inventory did not show a package lockfile at the repository root or configured app root (`src/src`). A previous Vercel build emitted `Found lockfile missing swc dependencies`. The latest inspected build completed successfully, but no validated lockfile has been added. Do not hand-edit or invent lockfile entries; generate and validate the correct lockfile with the intended package manager before changing dependency resolution.
 4. Test signup confirmation end-to-end, including the exact link generated by the configured Supabase email template, callback exchange, profile upsert and redirect to onboarding.
-5. Test first-organization creation and verify the database trigger creates exactly one active owner membership.
-6. Test the newly added password reset and resend-confirmation paths end-to-end, including expired/used links and successful password update.
-7. Add user/member administration and invitation acceptance/revocation UI. Database RPCs exist, but their end-to-end UI path was not established in this review.
-8. Add edit/detail screens for contracts and legal matters; current `CoreRecords` component primarily creates and lists records.
-9. Complete legal-request review, assignment, comments and approval actions in the UI; current `LegalRequests` component primarily submits and lists requests.
-10. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
-11. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
-12. Review the deployment's environment variables and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
+5. Test password reset end-to-end: email delivery, callback exchange, recovery session, password update, and login with the new password. Also test expired and already-used links.
+6. Test resend-confirmation email delivery and verify that its link reaches the canonical callback.
+7. Test first-organization creation and verify the database trigger creates exactly one active owner membership.
+8. Add user/member administration and invitation acceptance/revocation UI. Database RPCs exist, but their end-to-end UI path was not established in this review.
+9. Add edit/detail screens for contracts and legal matters; current `CoreRecords` component primarily creates and lists records.
+10. Complete legal-request review, assignment, comments and approval actions in the UI; current `LegalRequests` component primarily submits and lists requests.
+11. Complete full role-matrix testing for owner, admin, legal manager, lawyer, HR investigator and ordinary member. Verify cross-organization isolation using two independent test organizations.
+12. Verify investigation state transitions and all evidence/minutes/recommendation/decision/appeal flows with real authenticated users, including denied actions.
+13. Review the deployment's environment variables and Supabase Auth URL configuration in their dashboards. Values/secrets were not read or changed during this audit.
 
 ## Manual acceptance checklist
 
 - [ ] Signup with a new test email.
+- [ ] Open confirmation email and verify the canonical production callback, not localhost.
+- [ ] Confirm callback establishes a session and creates/updates the user profile.
+- [ ] Verify first login redirects to onboarding.
 - [ ] Request password reset, open email link, set a new password and sign in with it.
-- [ ] Resend signup confirmation and verify the link reaches the canonical callback.
-- [ ] Confirm email link opens the canonical production callback, not localhost.
-- [ ] Callback establishes a session and creates/updates the user profile.
-- [ ] First login redirects to onboarding.
-- [ ] Creating an organization creates the creator's owner membership.
+- [ ] Verify expired/used recovery links are rejected safely.
+- [ ] Resend signup confirmation and verify delivery and callback.
 - [ ] Logout and login work reliably.
+- [ ] Creating an organization creates the creator's owner membership.
 - [ ] Second user can join only via a valid invitation.
 - [ ] Owner/admin/legal manager permissions match the intended matrix.
 - [ ] Ordinary member cannot access restricted HR/investigation records.
@@ -83,4 +93,4 @@ The following bilingual account-recovery UI and callback routing have now been a
 
 ## Release decision
 
-**Not yet acceptance-tested as a complete MVP.** The production infrastructure and security baseline are present, but a live user acceptance pass and completion of the workflow gaps above are required before presenting the system as fully operational. Do not seed fake customer records in the production database for testing.
+**Not yet acceptance-tested as a complete MVP.** The production infrastructure and security baseline are present, and the account-recovery routes are implemented and deployed. A live user acceptance pass, confirmation of Supabase Auth configuration, and completion of the workflow gaps above are still required before presenting the system as fully operational. Do not seed fake customer records in the production database for testing.
