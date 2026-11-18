@@ -20,7 +20,7 @@ export default function LegalRequestDetail({requestId,organizationId,userId,memb
  const [assignedTo,setAssignedTo]=useState(""),[dueAt,setDueAt]=useState(""),[urgency,setUrgency]=useState("normal"),[status,setStatus]=useState("submitted"),[resolution,setResolution]=useState("");
  const canManage=legalRoles.includes(membershipRole);
  const canCommentInternally=canManage||request?.assigned_to===userId;
- const availableRoles=useMemo(()=>[...new Set(members.filter(m=>m.status==="active").map(m=>m.membership_role).filter(r=>roles.includes(r)&&r!=="contract_manager"))],[members]);
+ const availableRoles=useMemo(()=>[...new Set(members.filter(m=>m.status==="active").map(m=>m.membership_role).filter(r=>Object.keys(roleNames).includes(r)&&r!=="contract_manager"))],[members]);
  const load=useCallback(async()=>{
   setLoading(true);setError("");
   const [rr,mr,cr,arows]=await Promise.all([
