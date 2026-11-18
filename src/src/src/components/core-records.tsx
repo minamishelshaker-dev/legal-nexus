@@ -23,12 +23,13 @@ export default function CoreRecords({ mode, organizationId }: { mode: Mode; orga
 
   const load = useCallback(async () => {
     setLoading(true); setError("");
-    const query = isContracts
-      ? supabase.from("contracts").select("id,contract_number,title,counterparty_name,contract_type,status,start_date,end_date,value_amount,currency_code,created_at").eq("organization_id", organizationId).order("created_at", { ascending: false }).limit(100)
-      : supabase.from("legal_matters").select("id,reference_no,title,matter_type,status,priority,opened_at,closed_at,created_at").eq("organization_id", organizationId).order("created_at", { ascending: false }).limit(100);
-    const { data, error: queryError } = await query;
-    if (queryError) setError(queryError.message);
-    else setRows((data ?? []) as RecordRow[]);
+    if (isContracts) {
+      const { data, error: queryError } = await supabase.from("contracts").select("id,contract_number,title,counterparty_name,contract_type,status,start_date,end_date,value_amount,currency_code,created_at").eq("organization_id", organizationId).order("created_at", { ascending: false }).limit(100);
+      if (queryError) setError(queryError.message); else setRows((data ?? []) as RecordRow[]);
+    } else {
+      const { data, error: queryError } = await supabase.from("legal_matters").select("id,reference_no,title,matter_type,status,priority,opened_at,closed_at,created_at").eq("organization_id", organizationId).order("created_at", { ascending: false }).limit(100);
+      if (queryError) setError(queryError.message); else setRows((data ?? []) as RecordRow[]);
+    }
     setLoading(false);
   }, [isContracts, organizationId, supabase]);
 
@@ -36,12 +37,24 @@ export default function CoreRecords({ mode, organizationId }: { mode: Mode; orga
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setSaving(true); setError(""); setNotice("");
-    const payload = isContracts
-      ? { organization_id: organizationId, title: title.trim(), contract_number: reference.trim() || null, counterparty_name: counterparty.trim() || null, contract_type: recordType, status: "draft", start_date: date || null }
-      : { organization_id: organizationId, title: title.trim(), reference_no: reference.trim() || null, matter_type: recordType, status: "open", priority: "normal", description: description.trim() || null, opened_at: date || undefined };
-    const { error: insertError } = isContracts
-      ? await supabase.from("contracts").insert(payload)
-      : await supabase.from("legal_matters").insert(payload);
+    let insertError: { message: string } | null = null;
+    if (isContracts) {
+      const result = await supabase.from("contracts").insert({
+        organization_id: organizationId, title: title.trim(),
+        contract_number: reference.trim() || null,
+        counterparty_name: counterparty.trim() || null,
+        contract_type: recordType, status: "draft", start_date: date || null,
+      });
+      insertError = result.error;
+    } else {
+      const result = await supabase.from("legal_matters").insert({
+        organization_id: organizationId, title: title.trim(),
+        reference_no: reference.trim() || null, matter_type: recordType,
+        status: "open", priority: "normal",
+        description: description.trim() || null, opened_at: date || null,
+      });
+      insertError = result.error;
+    }
     if (insertError) setError(insertError.message);
     else { setTitle(""); setReference(""); setCounterparty(""); setDescription(""); setDate(""); setNotice(isContracts ? "Contract record created." : "Legal matter created."); await load(); }
     setSaving(false);
