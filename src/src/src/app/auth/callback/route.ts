@@ -36,7 +36,10 @@ export async function GET(request: Request) {
     return NextResponse.redirect(destination);
   }
 
-  const requestedNext = url.searchParams.get("next");\n  const safeNext = requestedNext && requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.includes("\\\\")\n    ? new URL(requestedNext, url.origin).origin === url.origin ? requestedNext : null\n    : null;\n  const recoveryRequested = otpType === "recovery" || safeNext === "/reset-password";
+  const requestedNext = url.searchParams.get("next");;
+  const safeNext = requestedNext && requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.includes("\\") 
+    ? new URL(requestedNext, url.origin).origin === url.origin ? requestedNext : null
+    : null;\n  const recoveryRequested = otpType === "recovery" || safeNext === "/reset-password";
 
   // Password recovery only needs a valid recovery session. Do not let an unrelated
   // profile-upsert issue prevent the user from setting a new password.
