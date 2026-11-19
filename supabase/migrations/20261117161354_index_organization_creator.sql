@@ -1,0 +1,1 @@
+create index if not exists idx_organizations_created_by on public.organizations(created_by);
