@@ -29,6 +29,11 @@ const GROUPS: Group[] = [
     ],
   },
   {
+    ar: "الموارد البشرية",
+    en: "People",
+    items: [{ key: "people", href: "/workspace/people", icon: "badge", ar: "الموظفون", en: "Employees" }],
+  },
+  {
     ar: "الحوكمة والمعرفة",
     en: "Governance",
     items: [
