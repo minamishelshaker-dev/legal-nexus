@@ -30,6 +30,6 @@ export default async function LegalMatterDetailPage({ params }: { params: Promis
     <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "القضايا والمنازعات" : "LEGAL MATTERS"}</div><h1>{ar ? "تفاصيل الملف." : "Matter details."}</h1></section>
     <CoreRecordDetail mode="matters" organizationId={membership.organization_id} recordId={id} membershipRole={membership.membership_role} lang={lang}/>
     <LinkedObligations organizationId={membership.organization_id} recordType="legal_matter" recordId={id} canManage={canManage} lang={lang}/>
-    <footer className="auth-foot">LEGAL NEXUS · {ar ? "ملف القضية أو المنازعة" : "LEGAL MATTER RECORD"}</div>
+    <footer className="auth-foot">LEGAL NEXUS · {ar ? "ملف القضية أو المنازعة" : "LEGAL MATTER RECORD"}</footer>
   </main>;
 }
