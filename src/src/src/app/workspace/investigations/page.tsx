@@ -6,6 +6,7 @@ import LanguageSwitcher from "@/components/language-switcher";
 import Investigations from "@/components/investigations";
 import {getLocale} from "@/lib/locale";
 import "../../auth.css";
+import "./investigations.css";
 
 export default async function InvestigationsPage(){
  const lang=await getLocale();const ar=lang==="ar";const supabase=await createClient();
