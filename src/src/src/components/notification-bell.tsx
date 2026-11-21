@@ -59,8 +59,15 @@ function describe(n: Notice, lang: "ar" | "en"): { title: string; text: string }
       return { title: ar ? "أُسند إليك ملف تحقيق" : "An investigation file was assigned to you", text: "" };
     case "invitation_accepted":
       return { title: ar ? "تم قبول دعوتك" : "Your invitation was accepted", text: subject };
-    case "chat_message":
-      return { title: ar ? "رسالة جديدة" : "New message", text: subject };
+    case "chat_message": {
+      const channel = typeof meta.channel === "string" ? meta.channel : "";
+      const preview = typeof meta.preview === "string" ? meta.preview : "";
+      const direct = meta.kind === "direct";
+      return {
+        title: direct ? (ar ? `رسالة من ${subject}` : `Message from ${subject}`) : ar ? `${subject} في #${channel}` : `${subject} in #${channel}`,
+        text: preview,
+      };
+    }
     default:
       return { title: ar ? "إشعار" : "Notification", text: subject };
   }
@@ -110,12 +117,14 @@ export default function NotificationBell({ organizationId, userId, lang }: { org
     })();
     const channel = supabase
       .channel("notifications-" + userId)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` }, () => {
+      .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` }, () => {
         void load();
       })
       .subscribe();
+    const timer = setInterval(() => void load(), 60000);
     return () => {
       active = false;
+      clearInterval(timer);
       void supabase.removeChannel(channel);
     };
   }, [organizationId, userId, supabase, load]);
@@ -160,7 +169,7 @@ export default function NotificationBell({ organizationId, userId, lang }: { org
             )}
           </div>
           <div className="bell-list">
-            {items.length === 0 && <div className="bell-empty">{ar ? "لا توجد إشعارات حتى الآن. ستظهر هنا الطلبات والموافقات والمواعيد المهمة." : "Nothing yet. Requests, approvals and important deadlines will appear here."}</div>}
+            {items.length === 0 && <div className="bell-empty">{ar ? "لا توجد إشعارات حتى الآن. ستظهر هنا الطلبات والموافقات والمواعيد المهمة والرسائل." : "Nothing yet. Requests, approvals, important deadlines and messages will appear here."}</div>}
             {items.map((n) => {
               const d = describe(n, lang);
               const body = (

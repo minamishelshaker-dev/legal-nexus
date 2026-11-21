@@ -21,6 +21,14 @@ const GROUPS: Group[] = [
     items: [{ key: "home", href: "/workspace", icon: "home", ar: "لوحة التحكم", en: "Dashboard" }],
   },
   {
+    ar: "التواصل والبحث",
+    en: "Collaboration",
+    items: [
+      { key: "chat", href: "/workspace/chat", icon: "chat", ar: "المحادثات", en: "Chat" },
+      { key: "search", href: "/workspace/search", icon: "filter", ar: "البحث المتقدّم", en: "Advanced search" },
+    ],
+  },
+  {
     ar: "العمليات القانونية",
     en: "Legal operations",
     items: [

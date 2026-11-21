@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Icon } from "@/components/icons";
@@ -16,6 +17,7 @@ const GROUPS: Record<string, { ar: string; en: string }> = {
 
 export default function GlobalSearch({ organizationId, role, lang }: { organizationId: string; role: string; lang: "ar" | "en" }) {
   const ar = lang === "ar";
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Hit[]>([]);
@@ -126,6 +128,7 @@ export default function GlobalSearch({ organizationId, role, lang }: { organizat
 
   const show = open && q.trim().length >= 2;
   const groups = Object.keys(GROUPS).filter((g) => hits.some((h) => h.group === g));
+  const fullHref = `/workspace/search?q=${encodeURIComponent(q.trim())}`;
 
   return (
     <div className="gsearch" ref={box}>
@@ -143,6 +146,11 @@ export default function GlobalSearch({ organizationId, role, lang }: { organizat
           if (e.key === "Escape") {
             setOpen(false);
             (e.target as HTMLInputElement).blur();
+          }
+          if (e.key === "Enter" && q.trim().length >= 2 && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            setOpen(false);
+            router.push(fullHref);
           }
         }}
         placeholder={ar ? "بحث في العقود والقضايا والطلبات والالتزامات…" : "Search contracts, matters, requests, obligations…"}
@@ -166,6 +174,9 @@ export default function GlobalSearch({ organizationId, role, lang }: { organizat
                 ))}
             </div>
           ))}
+          <Link href={fullHref} className="gsearch-hit" onClick={() => setOpen(false)} style={{ borderTop: "1px solid var(--line)", marginTop: 6, color: "var(--gold)" }}>
+            <b>{ar ? "عرض كل النتائج والتصفية المتقدّمة" : "View all results & advanced filters"}</b>
+          </Link>
         </div>
       )}
     </div>

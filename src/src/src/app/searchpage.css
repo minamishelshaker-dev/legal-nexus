@@ -1,0 +1,24 @@
+.search-page .people-head{margin-bottom:16px}
+.search-bar{position:relative;margin-bottom:16px}
+.search-bar input{width:100%;background:#0b1525;border:1px solid var(--line-strong);color:var(--text);border-radius:14px;padding:15px 18px;padding-inline-start:46px;font:inherit;font-size:15px;outline:none}
+.search-bar input:focus{border-color:var(--gold)}
+.search-bar .search-bar-icon{position:absolute;inset-inline-start:16px;top:50%;transform:translateY(-50%);color:#7f8fa5;display:grid}
+.filter-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.filter-row label{display:grid;gap:6px;font-size:11px;color:var(--muted)}
+.filter-row select,.filter-row input[type=date]{background:#0b1525;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 11px;font:inherit;font-size:12px;outline:none;min-width:140px}
+.filter-row select:focus,.filter-row input[type=date]:focus{border-color:var(--gold)}
+.filter-row .chat-check{margin:0!important;padding:9px 12px;font-size:12px;color:var(--text)}
+.type-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.type-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:8px 14px;font:inherit;font-size:12px;cursor:pointer}
+.type-pill:hover{color:var(--text);border-color:var(--line-strong)}
+.type-pill.active{border-color:var(--gold);color:var(--gold);background:rgba(198,165,107,.1)}
+.result-section{margin-top:18px}
+.result-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.result-head h2{font:600 15px Manrope;margin:0}
+.result-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 12px;border-top:1px solid var(--line);border-radius:10px}
+.result-row:first-of-type{border-top:0}
+.result-row:hover{background:rgba(198,165,107,.06)}
+.result-row .dash-row-main{min-width:0}
+.result-side{display:flex;gap:10px;align-items:center;flex:none}
+.result-side small{color:var(--muted);font-size:11px}
+.search-summary{color:var(--muted);font-size:12px;margin:14px 2px 0}
