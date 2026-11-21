@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/locale";
 import AppShell from "@/components/app-shell";
 import "../auth.css";
 import "../shell.css";
+import "../search.css";
 
 export default async function WorkspaceLayout({ children }: { children: ReactNode }) {
   const lang = await getLocale();
@@ -31,7 +32,13 @@ export default async function WorkspaceLayout({ children }: { children: ReactNod
     .maybeSingle();
 
   return (
-    <AppShell lang={lang} orgName={organization?.name ?? ""} role={membership.membership_role} email={user.email ?? ""}>
+    <AppShell
+      lang={lang}
+      orgName={organization?.name ?? ""}
+      organizationId={membership.organization_id}
+      role={membership.membership_role}
+      email={user.email ?? ""}
+    >
       {children}
     </AppShell>
   );

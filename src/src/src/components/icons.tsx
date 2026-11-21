@@ -17,6 +17,7 @@ const PATHS: Record<string, string[]> = {
   plus: ["M12 5v14", "M5 12h14"],
   upload: ["M12 16V5", "M7.5 9.5 12 5l4.5 4.5", "M5 19h14"],
   download: ["M12 4v11", "M7.5 11.5 12 16l4.5-4.5", "M5 19h14"],
+  search: ["M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z", "M20 20l-4-4"],
 };
 
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {

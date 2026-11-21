@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import SignOutButton from "@/components/sign-out-button";
 import LanguageSwitcher from "@/components/language-switcher";
+import GlobalSearch from "@/components/global-search";
 import { BrandMark, Icon } from "@/components/icons";
 import { canOpen, ROLE_LABELS } from "@/lib/access";
 import type { ModuleKey } from "@/lib/access";
@@ -48,12 +49,14 @@ const GROUPS: Group[] = [
 export default function AppShell({
   lang,
   orgName,
+  organizationId,
   role,
   email,
   children,
 }: {
   lang: "ar" | "en";
   orgName: string;
+  organizationId: string;
   role: string;
   email: string;
   children: ReactNode;
@@ -127,8 +130,7 @@ export default function AppShell({
             <button type="button" className="menu-btn" aria-label={ar ? "فتح القائمة" : "Open menu"} onClick={() => setOpen(true)}>
               <Icon name="menu" size={20} />
             </button>
-            <span className="topbar-org">{orgName}</span>
-            <span className="chip">{roleLabel}</span>
+            <GlobalSearch organizationId={organizationId} role={role} lang={lang} />
           </div>
           <div className="topbar-end">
             <LanguageSwitcher lang={lang} />
