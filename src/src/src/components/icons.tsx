@@ -18,6 +18,10 @@ const PATHS: Record<string, string[]> = {
   upload: ["M12 16V5", "M7.5 9.5 12 5l4.5 4.5", "M5 19h14"],
   download: ["M12 4v11", "M7.5 11.5 12 16l4.5-4.5", "M5 19h14"],
   search: ["M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z", "M20 20l-4-4"],
+  chat: ["M4 5h16v11H10l-4 4v-4H4z", "M8 9h8", "M8 12.5h5"],
+  filter: ["M4 6h16", "M7 12h10", "M10 18h4"],
+  send: ["M4 12 20 4l-5 16-3-7z", "M12 13l8-9"],
+  trash: ["M5 7h14", "M10 7V4h4v3", "M7 7l1 13h8l1-13"],
 };
 
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {

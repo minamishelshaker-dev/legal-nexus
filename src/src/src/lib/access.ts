@@ -7,7 +7,9 @@ export type ModuleKey =
   | "obligations"
   | "organization"
   | "members"
-  | "people";
+  | "people"
+  | "chat"
+  | "search";
 
 // Mirrors the database row-level security rules so users are only offered
 // modules they can actually use. The database remains the source of truth.
@@ -16,6 +18,8 @@ const MODULE_ROLES: Record<ModuleKey, string[] | null> = {
   documents: null,
   obligations: null,
   organization: null,
+  chat: null,
+  search: null,
   contracts: ["owner", "admin", "legal_manager", "lawyer", "contract_manager"],
   matters: ["owner", "admin", "legal_manager", "lawyer"],
   investigations: ["owner", "admin", "legal_manager", "lawyer", "hr_investigator"],
