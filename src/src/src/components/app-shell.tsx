@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import SignOutButton from "@/components/sign-out-button";
 import LanguageSwitcher from "@/components/language-switcher";
 import GlobalSearch from "@/components/global-search";
+import NotificationBell from "@/components/notification-bell";
 import { BrandMark, Icon } from "@/components/icons";
 import { canOpen, ROLE_LABELS } from "@/lib/access";
 import type { ModuleKey } from "@/lib/access";
@@ -50,6 +51,7 @@ export default function AppShell({
   lang,
   orgName,
   organizationId,
+  userId,
   role,
   email,
   children,
@@ -57,6 +59,7 @@ export default function AppShell({
   lang: "ar" | "en";
   orgName: string;
   organizationId: string;
+  userId: string;
   role: string;
   email: string;
   children: ReactNode;
@@ -133,6 +136,7 @@ export default function AppShell({
             <GlobalSearch organizationId={organizationId} role={role} lang={lang} />
           </div>
           <div className="topbar-end">
+            <NotificationBell organizationId={organizationId} userId={userId} lang={lang} />
             <LanguageSwitcher lang={lang} />
             <span className="user-chip" title={email}>
               <span className="user-avatar">{userInitial}</span>

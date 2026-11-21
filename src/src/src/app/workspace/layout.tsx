@@ -36,6 +36,7 @@ export default async function WorkspaceLayout({ children }: { children: ReactNod
       lang={lang}
       orgName={organization?.name ?? ""}
       organizationId={membership.organization_id}
+      userId={user.id}
       role={membership.membership_role}
       email={user.email ?? ""}
     >
