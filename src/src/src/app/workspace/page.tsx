@@ -83,6 +83,7 @@ export default async function WorkspacePage() {
     obligationsList,
     contractsList,
     requestsList,
+    chatsRes,
   ] = await Promise.all([
     supabase.from("organizations").select("name").eq("id", org).maybeSingle(),
     head(count("legal_requests").eq("organization_id", org).in("status", OPEN_REQUESTS)),
@@ -138,12 +139,14 @@ export default async function WorkspacePage() {
       .eq("organization_id", org)
       .order("created_at", { ascending: false })
       .limit(5),
+    supabase.rpc("list_my_chats", { p_org: org }),
   ]);
 
   const orgName: string = (organization as any)?.data?.name ?? t("مؤسستك", "Your organization");
   const obligations: any[] = (obligationsList as any)?.data ?? [];
   const contracts: any[] = (contractsList as any)?.data ?? [];
   const requests: any[] = (requestsList as any)?.data ?? [];
+  const unreadChats: number = (((chatsRes as any)?.data ?? []) as any[]).reduce((n, c) => n + (c.muted ? 0 : Number(c.unread_count) || 0), 0);
 
   const fmt = (d: string) =>
     new Date(d + (d.length === 10 ? "T00:00:00Z" : "")).toLocaleDateString(ar ? "ar-EG" : "en-GB", {
@@ -212,6 +215,14 @@ export default async function WorkspacePage() {
       href: "/workspace/investigations",
       foot: t("لم تُغلق بعد", "Not yet closed"),
     });
+  kpis.push({
+    icon: "chat",
+    label: t("رسائل غير مقروءة", "Unread messages"),
+    value: unreadChats,
+    href: "/workspace/chat",
+    foot: t("في محادثات فريقك", "In your team conversations"),
+    tone: unreadChats > 0 ? "warn" : "",
+  });
 
   type Step = { label: string; href: string; done: boolean };
   const steps: Step[] = [
@@ -237,8 +248,11 @@ export default async function WorkspacePage() {
     { key: "contracts", icon: "contract", href: "/workspace/contracts", title: t("العقود", "Contracts"), desc: t("سجل العقود وتواريخ الانتهاء والمسؤولين.", "Contract register, expiry dates and owners.") },
     { key: "matters", icon: "scale", href: "/workspace/matters", title: t("القضايا والمنازعات", "Matters"), desc: t("القضايا والمنازعات وأولوياتها.", "Cases and disputes with priorities.") },
     { key: "investigations", icon: "shield", href: "/workspace/investigations", title: t("التحقيقات الإدارية", "Investigations"), desc: t("الجلسات والأدلة والقرارات والتظلمات.", "Sessions, evidence, decisions and appeals.") },
+    { key: "people", icon: "badge", href: "/workspace/people", title: t("الموظفون", "Employees"), desc: t("سجل الموظفين والتعيينات والتنقلات والمستندات السرية.", "Employee register, hiring, transfers and confidential files.") },
     { key: "documents", icon: "folder", href: "/workspace/documents", title: t("المستندات", "Documents"), desc: t("ملفات خاصة بتصنيفات سرية وحفظ آمن.", "Private files with classification and secure storage.") },
     { key: "obligations", icon: "clock", href: "/workspace/obligations", title: t("الالتزامات والمواعيد", "Obligations"), desc: t("التزامات مرتبطة بالعقود والقضايا ومواعيد استحقاقها.", "Obligations linked to contracts and matters, with due dates.") },
+    { key: "chat", icon: "chat", href: "/workspace/chat", title: t("المحادثات", "Chat"), desc: t("قنوات ورسائل مباشرة بين أعضاء شركتك.", "Channels and direct messages between your colleagues.") },
+    { key: "search", icon: "filter", href: "/workspace/search", title: t("البحث المتقدّم", "Advanced search"), desc: t("بحث وتصفية في كل سجلات المؤسسة.", "Search and filter across every organization record.") },
     { key: "organization", icon: "building", href: "/workspace/organization", title: t("المؤسسة والهيكل", "Organization"), desc: t("الكيانات والإدارات والمناصب.", "Entities, departments and positions.") },
     { key: "members", icon: "users", href: "/workspace/members", title: t("الأعضاء والصلاحيات", "Members & access"), desc: t("الدعوات والأدوار وسجل التدقيق.", "Invitations, roles and audit trail.") },
   ];
