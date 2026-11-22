@@ -4,9 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/sign-out-button";
 import CoreRecordDetail from "@/components/core-record-detail";
 import LinkedObligations from "@/components/linked-obligations";
+import SourceRequest from "@/components/source-request";
 import LanguageSwitcher from "@/components/language-switcher";
 import { getLocale } from "@/lib/locale";
 import "../../../auth.css";
+import "../../../people.css";
+import "../../investigations/investigations.css";
 
 export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,7 +30,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
       <Link href="/workspace" className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></Link>
       <div className="workspace-user"><LanguageSwitcher lang={lang}/><span>{user.email}</span><SignOutButton lang={lang}/></div>
     </header>
-    <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "إدارة العقود" : "CONTRACT MANAGEMENT"}</div><h1>{ar ? "تفاصيل العقد." : "Contract details."}</h1></section>
+    <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "إدارة العقود" : "CONTRACT MANAGEMENT"}</div><h1>{ar ? "تفاصيل العقد." : "Contract details."}</h1><SourceRequest recordType="contract" recordId={id} lang={lang}/></section>
     <CoreRecordDetail mode="contracts" organizationId={membership.organization_id} recordId={id} membershipRole={membership.membership_role} lang={lang}/>
     <LinkedObligations organizationId={membership.organization_id} recordType="contract" recordId={id} canManage={canManage} lang={lang}/>
     <footer className="auth-foot">LEGAL NEXUS · {ar ? "سجل العقد" : "CONTRACT RECORD"}</footer>

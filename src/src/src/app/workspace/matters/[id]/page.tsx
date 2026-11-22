@@ -4,9 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/sign-out-button";
 import CoreRecordDetail from "@/components/core-record-detail";
 import LinkedObligations from "@/components/linked-obligations";
+import SourceRequest from "@/components/source-request";
 import LanguageSwitcher from "@/components/language-switcher";
 import { getLocale } from "@/lib/locale";
 import "../../../auth.css";
+import "../../../people.css";
+import "../../investigations/investigations.css";
 
 export default async function LegalMatterDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,7 +30,7 @@ export default async function LegalMatterDetailPage({ params }: { params: Promis
       <Link href="/workspace" className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></Link>
       <div className="workspace-user"><LanguageSwitcher lang={lang}/><span>{user.email}</span><SignOutButton lang={lang}/></div>
     </header>
-    <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "القضايا والمنازعات" : "LEGAL MATTERS"}</div><h1>{ar ? "تفاصيل الملف." : "Matter details."}</h1></section>
+    <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "القضايا والمنازعات" : "LEGAL MATTERS"}</div><h1>{ar ? "تفاصيل الملف." : "Matter details."}</h1><SourceRequest recordType="legal_matter" recordId={id} lang={lang}/></section>
     <CoreRecordDetail mode="matters" organizationId={membership.organization_id} recordId={id} membershipRole={membership.membership_role} lang={lang}/>
     <LinkedObligations organizationId={membership.organization_id} recordType="legal_matter" recordId={id} canManage={canManage} lang={lang}/>
     <footer className="auth-foot">LEGAL NEXUS · {ar ? "ملف القضية أو المنازعة" : "LEGAL MATTER RECORD"}</footer>

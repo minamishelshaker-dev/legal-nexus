@@ -4,8 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/sign-out-button";
 import LanguageSwitcher from "@/components/language-switcher";
 import LegalRequestDetail from "@/components/legal-request-detail";
+import RequestConversion from "@/components/request-conversion";
 import { getLocale } from "@/lib/locale";
 import "../../../auth.css";
+import "../../../people.css";
+import "../../investigations/investigations.css";
 
 export default async function LegalRequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,11 +23,15 @@ export default async function LegalRequestDetailPage({ params }: { params: Promi
   if (error) throw new Error("Unable to verify organization access.");
   if (!membership) redirect("/onboarding");
   const { data: organization } = await supabase.from("organizations").select("name").eq("id", membership.organization_id).maybeSingle();
+  const role = membership.membership_role;
+  const canContract = ["owner", "admin", "legal_manager", "lawyer", "contract_manager"].includes(role);
+  const canMatter = ["owner", "admin", "legal_manager", "lawyer"].includes(role);
 
   return <main className={"workspace-shell " + (ar ? "is-ar" : "")} dir={ar ? "rtl" : "ltr"}>
     <header className="workspace-header"><Link href="/workspace" className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></Link><div className="workspace-user"><LanguageSwitcher lang={lang}/><span>{user.email}</span><SignOutButton lang={lang}/></div></header>
     <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "العمليات القانونية / تفاصيل الطلب" : "LEGAL OPERATIONS / REQUEST DETAILS"}</div><h1>{ar ? "تفاصيل الطلب القانوني." : "Legal request details."}</h1><p>{organization?.name || (ar ? "مؤسستك" : "Your organization")}</p><Link href="/workspace/requests" className="back-link">{ar ? "العودة إلى الطلبات ←" : "← Back to requests"}</Link></section>
-    <LegalRequestDetail requestId={id} organizationId={membership.organization_id} userId={user.id} membershipRole={membership.membership_role} lang={lang}/>
+    <LegalRequestDetail requestId={id} organizationId={membership.organization_id} userId={user.id} membershipRole={role} lang={lang}/>
+    <RequestConversion organizationId={membership.organization_id} requestId={id} canContract={canContract} canMatter={canMatter} lang={lang}/>
     <footer className="auth-foot">LEGAL NEXUS · {ar ? "مسار الطلبات والموافقات القانونية" : "LEGAL REQUEST & APPROVAL WORKFLOW"}</footer>
   </main>;
 }
