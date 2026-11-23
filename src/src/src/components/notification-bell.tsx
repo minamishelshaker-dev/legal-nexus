@@ -29,6 +29,8 @@ function describe(n: Notice, lang: "ar" | "en"): { title: string; text: string }
   const subject = n.subject ?? "";
   const meta = n.meta ?? {};
   const date = (v: unknown) => (typeof v === "string" ? v : "");
+  const dateTime = (v: unknown) =>
+    typeof v === "string" ? new Date(v).toLocaleString(ar ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short" }) : "";
   switch (n.kind) {
     case "request_created":
       return { title: ar ? "طلب قانوني جديد" : "New legal request", text: subject };
@@ -59,6 +61,10 @@ function describe(n: Notice, lang: "ar" | "en"): { title: string; text: string }
       return { title: ar ? "أُسند إليك ملف تحقيق" : "An investigation file was assigned to you", text: "" };
     case "invitation_accepted":
       return { title: ar ? "تم قبول دعوتك" : "Your invitation was accepted", text: subject };
+    case "event_assigned":
+      return { title: ar ? "أُسند إليك موعد قضائي" : "A hearing or deadline was assigned to you", text: subject + (dateTime(meta.starts_at) ? " · " + dateTime(meta.starts_at) : "") };
+    case "event_soon":
+      return { title: ar ? "جلسة أو موعد خلال 3 أيام" : "Hearing or deadline within 3 days", text: subject + (dateTime(meta.starts_at) ? " · " + dateTime(meta.starts_at) : "") };
     case "chat_message": {
       const channel = typeof meta.channel === "string" ? meta.channel : "";
       const preview = typeof meta.preview === "string" ? meta.preview : "";

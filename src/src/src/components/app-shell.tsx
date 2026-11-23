@@ -25,6 +25,7 @@ const GROUPS: Group[] = [
     en: "Collaboration",
     items: [
       { key: "chat", href: "/workspace/chat", icon: "chat", ar: "المحادثات", en: "Chat" },
+      { key: "calendar", href: "/workspace/calendar", icon: "calendar", ar: "تقويم المواعيد", en: "Calendar" },
       { key: "search", href: "/workspace/search", icon: "filter", ar: "البحث المتقدّم", en: "Advanced search" },
     ],
   },

@@ -9,3 +9,4 @@
 .employee-hit b{font-size:13px;font-weight:600}
 .employee-hit small{color:var(--muted);font-size:11px}
 .muted-note{color:var(--muted);font-size:12px}
+.source-banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
