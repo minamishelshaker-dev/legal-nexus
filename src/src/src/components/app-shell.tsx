@@ -35,6 +35,7 @@ const GROUPS: Group[] = [
     items: [
       { key: "requests", href: "/workspace/requests", icon: "inbox", ar: "الطلبات القانونية", en: "Legal requests" },
       { key: "contracts", href: "/workspace/contracts", icon: "contract", ar: "العقود", en: "Contracts" },
+      { key: "templates", href: "/workspace/templates", icon: "template", ar: "القوالب والبنود", en: "Templates & clauses" },
       { key: "matters", href: "/workspace/matters", icon: "scale", ar: "القضايا والمنازعات", en: "Matters" },
       { key: "investigations", href: "/workspace/investigations", icon: "shield", ar: "التحقيقات الإدارية", en: "Investigations" },
     ],

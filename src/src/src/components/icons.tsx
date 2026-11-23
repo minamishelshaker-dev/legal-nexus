@@ -23,6 +23,7 @@ const PATHS: Record<string, string[]> = {
   send: ["M4 12 20 4l-5 16-3-7z", "M12 13l8-9"],
   trash: ["M5 7h14", "M10 7V4h4v3", "M7 7l1 13h8l1-13"],
   calendar: ["M4 6h16v14H4z", "M4 10h16", "M8 3v5", "M16 3v5", "M8 14h2", "M13 14h3", "M8 17h2"],
+  template: ["M4 4h16v6H4z", "M4 14h7v6H4z", "M15 14h5", "M15 17h5", "M15 20h3"],
 };
 
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {

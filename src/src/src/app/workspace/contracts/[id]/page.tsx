@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/sign-out-button";
 import CoreRecordDetail from "@/components/core-record-detail";
+import ContractDrafts from "@/components/contract-drafts";
 import LinkedObligations from "@/components/linked-obligations";
 import SourceRequest from "@/components/source-request";
 import LanguageSwitcher from "@/components/language-switcher";
 import { getLocale } from "@/lib/locale";
 import "../../../auth.css";
 import "../../../people.css";
+import "../../../templates.css";
 import "../../investigations/investigations.css";
 
 export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -32,6 +34,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     </header>
     <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "إدارة العقود" : "CONTRACT MANAGEMENT"}</div><h1>{ar ? "تفاصيل العقد." : "Contract details."}</h1><SourceRequest recordType="contract" recordId={id} lang={lang}/></section>
     <CoreRecordDetail mode="contracts" organizationId={membership.organization_id} recordId={id} membershipRole={membership.membership_role} lang={lang}/>
+    <ContractDrafts organizationId={membership.organization_id} contractId={id} canEdit={canManage} lang={lang}/>
     <LinkedObligations organizationId={membership.organization_id} recordType="contract" recordId={id} canManage={canManage} lang={lang}/>
     <footer className="auth-foot">LEGAL NEXUS · {ar ? "سجل العقد" : "CONTRACT RECORD"}</footer>
   </main>;
