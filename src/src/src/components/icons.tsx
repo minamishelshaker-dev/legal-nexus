@@ -22,6 +22,7 @@ const PATHS: Record<string, string[]> = {
   filter: ["M4 6h16", "M7 12h10", "M10 18h4"],
   send: ["M4 12 20 4l-5 16-3-7z", "M12 13l8-9"],
   trash: ["M5 7h14", "M10 7V4h4v3", "M7 7l1 13h8l1-13"],
+  calendar: ["M4 6h16v14H4z", "M4 10h16", "M8 3v5", "M16 3v5", "M8 14h2", "M13 14h3", "M8 17h2"],
 };
 
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {
