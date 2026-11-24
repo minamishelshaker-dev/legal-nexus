@@ -24,6 +24,7 @@ const PATHS: Record<string, string[]> = {
   trash: ["M5 7h14", "M10 7V4h4v3", "M7 7l1 13h8l1-13"],
   calendar: ["M4 6h16v14H4z", "M4 10h16", "M8 3v5", "M16 3v5", "M8 14h2", "M13 14h3", "M8 17h2"],
   template: ["M4 4h16v6H4z", "M4 14h7v6H4z", "M15 14h5", "M15 17h5", "M15 20h3"],
+  coins: ["M12 5c4.4 0 8 1.1 8 2.5S16.4 10 12 10 4 8.9 4 7.5 7.6 5 12 5z", "M4 7.5v4C4 12.9 7.6 14 12 14s8-1.1 8-2.5v-4", "M4 11.5v4C4 16.9 7.6 18 12 18s8-1.1 8-2.5v-4"],
 };
 
 export function Icon({ name, size = 18 }: { name: string; size?: number }) {

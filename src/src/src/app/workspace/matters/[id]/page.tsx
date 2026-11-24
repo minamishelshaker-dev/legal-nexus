@@ -5,12 +5,15 @@ import SignOutButton from "@/components/sign-out-button";
 import CoreRecordDetail from "@/components/core-record-detail";
 import LinkedObligations from "@/components/linked-obligations";
 import MatterEvents from "@/components/matter-events";
+import MatterCosts from "@/components/matter-costs";
 import SourceRequest from "@/components/source-request";
 import LanguageSwitcher from "@/components/language-switcher";
 import { getLocale } from "@/lib/locale";
 import "../../../auth.css";
 import "../../../people.css";
 import "../../../calendar.css";
+import "../../../templates.css";
+import "../../../spend.css";
 import "../../investigations/investigations.css";
 
 export default async function LegalMatterDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -26,16 +29,19 @@ export default async function LegalMatterDetailPage({ params }: { params: Promis
     .order("created_at", { ascending: true }).limit(1).maybeSingle();
   if (error) throw new Error("Unable to verify organization access.");
   if (!membership) redirect("/onboarding");
-  const canManage = ["owner", "admin", "legal_manager", "lawyer", "contract_manager"].includes(membership.membership_role);
-  const canSchedule = ["owner", "admin", "legal_manager", "lawyer"].includes(membership.membership_role);
+  const role = membership.membership_role;
+  const canManage = ["owner", "admin", "legal_manager", "lawyer", "contract_manager"].includes(role);
+  const canSchedule = ["owner", "admin", "legal_manager", "lawyer"].includes(role);
+  const isManager = ["owner", "admin", "legal_manager"].includes(role);
   return <main className={"workspace-shell " + (ar ? "is-ar" : "")} dir={ar ? "rtl" : "ltr"}>
     <header className="workspace-header">
       <Link href="/workspace" className="auth-brand"><span className="mark">LN</span><span>LEGAL <b>NEXUS</b></span></Link>
       <div className="workspace-user"><LanguageSwitcher lang={lang}/><span>{user.email}</span><SignOutButton lang={lang}/></div>
     </header>
     <section className="workspace-hero module-hero"><div className="auth-kicker">{ar ? "القضايا والمنازعات" : "LEGAL MATTERS"}</div><h1>{ar ? "تفاصيل الملف." : "Matter details."}</h1><SourceRequest recordType="legal_matter" recordId={id} lang={lang}/></section>
-    <CoreRecordDetail mode="matters" organizationId={membership.organization_id} recordId={id} membershipRole={membership.membership_role} lang={lang}/>
+    <CoreRecordDetail mode="matters" organizationId={membership.organization_id} recordId={id} membershipRole={role} lang={lang}/>
     <MatterEvents organizationId={membership.organization_id} matterId={id} canManage={canSchedule} lang={lang}/>
+    <MatterCosts organizationId={membership.organization_id} matterId={id} userId={user.id} canLog={canSchedule} isManager={isManager} lang={lang}/>
     <LinkedObligations organizationId={membership.organization_id} recordType="legal_matter" recordId={id} canManage={canManage} lang={lang}/>
     <footer className="auth-foot">LEGAL NEXUS · {ar ? "ملف القضية أو المنازعة" : "LEGAL MATTER RECORD"}</footer>
   </main>;
