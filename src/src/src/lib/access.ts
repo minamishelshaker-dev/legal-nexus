@@ -11,7 +11,8 @@ export type ModuleKey =
   | "chat"
   | "search"
   | "calendar"
-  | "templates";
+  | "templates"
+  | "spend";
 
 // Mirrors the database row-level security rules so users are only offered
 // modules they can actually use. The database remains the source of truth.
@@ -29,6 +30,7 @@ const MODULE_ROLES: Record<ModuleKey, string[] | null> = {
   investigations: ["owner", "admin", "legal_manager", "lawyer", "hr_investigator"],
   members: ["owner", "admin"],
   people: ["owner", "admin", "hr_manager"],
+  spend: ["owner", "admin", "legal_manager"],
 };
 
 export function canOpen(module: ModuleKey, role: string): boolean {

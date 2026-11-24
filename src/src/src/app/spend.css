@@ -1,0 +1,23 @@
+.spend-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.spend-card{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);display:grid;gap:6px}
+.spend-card small{color:var(--muted);font-size:11px}
+.spend-card b{font:700 24px Manrope;letter-spacing:-.5px}
+.spend-card.over b{color:var(--danger)}
+.bar-row{display:grid;grid-template-columns:minmax(110px,1fr) minmax(0,3fr) auto;gap:12px;align-items:center;padding:8px 0;font-size:12px}
+.bar-track{height:10px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.bar-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#e6cd96)}
+.bar-track i.over{background:var(--danger)}
+.bar-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row em{font-style:normal;color:var(--muted);white-space:nowrap}
+.spend-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.spend-form label{display:grid;gap:6px;font-size:11px;color:var(--muted);min-width:0}
+.spend-form input,.spend-form select,.spend-form textarea{background:#0b1525;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 11px;font:inherit;font-size:12px;outline:none;min-width:0}
+.spend-form input:focus,.spend-form select:focus,.spend-form textarea:focus{border-color:var(--gold)}
+.spend-form .wide{grid-column:1/-1}
+.cost-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.cost-row:first-of-type{border-top:0}
+.cost-main{display:grid;gap:3px;min-width:0;flex:1}
+.cost-main b{font-size:13px}
+.cost-main small{font-size:11px;color:var(--muted)}
+.budget-line{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.budget-line input{background:#0b1525;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 10px;font:inherit;font-size:12px;width:140px}
