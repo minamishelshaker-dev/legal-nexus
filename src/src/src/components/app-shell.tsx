@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import SignOutButton from "@/components/sign-out-button";
 import LanguageSwitcher from "@/components/language-switcher";
+import ThemeToggle from "@/components/theme-toggle";
 import GlobalSearch from "@/components/global-search";
 import NotificationBell from "@/components/notification-bell";
-import { BrandMark, Icon } from "@/components/icons";
+import { BrandLockup } from "@/components/brand";
+import { Icon } from "@/components/icons";
 import { canOpen, ROLE_LABELS } from "@/lib/access";
 import type { ModuleKey } from "@/lib/access";
 
@@ -95,11 +97,8 @@ export default function AppShell({
   return (
     <div className={"app-shell " + (ar ? "is-ar " : "") + (open ? "nav-open" : "")} dir={ar ? "rtl" : "ltr"}>
       <aside className="app-sidebar" aria-label={ar ? "التنقل الرئيسي" : "Main navigation"}>
-        <Link href="/workspace" className="app-brand">
-          <BrandMark />
-          <span>
-            LEGAL <b>NEXUS</b>
-          </span>
+        <Link href="/workspace" className="app-brand" aria-label="Legal Nexus">
+          <BrandLockup size={38} />
         </Link>
 
         <div className="org-card">
@@ -133,7 +132,7 @@ export default function AppShell({
           })}
         </nav>
 
-        <div className="sidebar-foot">{ar ? "نظام التشغيل للإدارات القانونية" : "The operating system for corporate legal departments"}</div>
+        <div className="sidebar-foot">{ar ? "نظام التشغيل للإدارات القانونية" : "Legal Management & Enterprise Solutions"}</div>
       </aside>
 
       <button type="button" className="app-scrim" aria-label={ar ? "إغلاق القائمة" : "Close menu"} onClick={() => setOpen(false)} />
@@ -148,6 +147,7 @@ export default function AppShell({
           </div>
           <div className="topbar-end">
             <NotificationBell organizationId={organizationId} userId={userId} lang={lang} />
+            <ThemeToggle lang={lang} />
             <LanguageSwitcher lang={lang} />
             <span className="user-chip" title={email}>
               <span className="user-avatar">{userInitial}</span>
