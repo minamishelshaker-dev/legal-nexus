@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+
+/* =====================================================================
+   Legal Nexus design tokens. Brand palette taken from the logo:
+   navy #002651, gold #cd973b, teal #0a7f94.  Dark is the base; light overrides below.
+   ===================================================================== */
+:root{
+  --bg:#071427;--bg-2:#0a1c36;--panel:#0e213f;--panel-2:#0b1b34;
+  --line:rgba(190,210,240,.14);--line-strong:rgba(190,210,240,.27);
+  --text:#eef3fb;--text-2:#cbd7e8;--muted:#9db0c8;
+  --gold:#d9a64a;--gold-fill:#d9a64a;--teal:#27a9bd;--blue:#7fb0d6;
+  --input:#0a1930;--hover:rgba(255,255,255,.055);--on-gold:#0b1830;--brand-ink:#ffffff;
+  --ok:#5fc08a;--warn:#e0a84e;--danger:#e0705f;--radius:14px;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+html[data-theme="light"]{
+  --bg:#f3f6fb;--bg-2:#e8eef7;--panel:#ffffff;--panel-2:#f7f9fd;
+  --line:rgba(12,42,88,.12);--line-strong:rgba(12,42,88,.24);
+  --text:#0b1f3f;--text-2:#27405f;--muted:#5a6f8b;
+  --gold:#9c6a14;--gold-fill:#d4a246;--teal:#0a7f94;--blue:#1d5ea8;
+  --input:#ffffff;--hover:rgba(10,42,94,.055);--on-gold:#0b1830;--brand-ink:#0b2a5b;
+  --ok:#17804d;--warn:#a96100;--danger:#c0392b;
+  --shadow:0 8px 26px rgba(10,38,82,.09);
+}
+body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* ---- Brand lockup ---- */
+.brand-mark{flex:none;display:block}
+.brand-lockup{display:inline-flex;align-items:center;gap:.7em;color:var(--brand-ink)}
+.brand-word{display:grid;line-height:1;font-family:Montserrat,'DM Sans',sans-serif;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.brand-word .l1{font-size:.74em;letter-spacing:.2em;font-weight:700;margin-bottom:.22em}
+.brand-word .l2{font-size:1.28em}
+.brand-word .l3{font-size:.34em;letter-spacing:.32em;font-weight:600;margin-top:.6em;opacity:.8}
+.brand-word i{font-style:normal;color:var(--gold-fill)}
+.is-ar .brand-word,.is-ar .brand-lockup *{font-family:Montserrat,sans-serif;letter-spacing:.03em}
+
+/* Legacy pages still using the text brand (auth, onboarding, invitations) */
+html body .auth-brand{font:800 15px Montserrat,sans-serif;letter-spacing:.06em;color:var(--brand-ink)}
+html body .auth-brand b{color:var(--brand-ink);font-weight:800}
+html body .auth-brand .mark,html body .brand .mark{width:40px;height:43px;border:0;border-radius:0;font-size:0;color:transparent;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 467 502'%3E%3Cdefs%3E%3ClinearGradient id='a' gradientUnits='userSpaceOnUse' x1='87' y1='157' x2='348' y2='344'%3E%3Cstop offset='0' stop-color='%23002146'/%3E%3Cstop offset='.4' stop-color='%2300366a'/%3E%3Cstop offset='1' stop-color='%23002045'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' gradientUnits='userSpaceOnUse' x1='386' y1='200' x2='68' y2='297'%3E%3Cstop offset='0' stop-color='%238d5d0f'/%3E%3Cstop offset='.4' stop-color='%23dca850'/%3E%3Cstop offset='1' stop-color='%23aa751d'/%3E%3C/linearGradient%3E%3ClinearGradient id='c' gradientUnits='userSpaceOnUse' x1='386' y1='378' x2='271' y2='216'%3E%3Cstop offset='0' stop-color='%23003852'/%3E%3Cstop offset='1' stop-color='%23017891'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23a)' fill-rule='evenodd' d='M254 491L293 468 302 461 278 464 262 460 248 452 262 460 266 464 266 473 264 480ZM9 239L7 248 7 345 10 356 20 372 30 381 99 422 100 421 94 411 92 403 92 226 94 224 309 362 323 365 333 364 382 339 379 335 380 306 366 313 356 313 340 307 132 171 122 167 102 168 32 209 20 220ZM154 48L156 51 165 48 182 49 200 56 368 166 371 165 371 102 368 92 362 82 349 71 256 14 238 8 219 10 189 26Z'/%3E%3Cpath fill='url(%23b)' fill-rule='evenodd' d='M123 281L123 348 125 352 133 359 222 413 229 416 236 412 240 416 239 422 242 425 268 441 283 447 299 448 315 445 356 428 437 380 452 363 458 348 458 306 450 318 437 330 354 377 333 386 312 386 295 379 250 353 127 278ZM10 150L7 161 7 215 9 215 17 200 30 187 86 152 106 143 124 143 140 149 151 157 163 163 231 209 349 282 355 283 357 280 357 195 355 191 350 186 181 73 159 65 143 65 137 67 133 65 155 52 154 49 149 51 129 66 123 68 29 124 18 135Z'/%3E%3Cpath fill='url(%23c)' fill-rule='evenodd' d='M110 372L109 412 114 427 123 437 214 492 231 496 243 495 253 491 258 485 261 484 265 473 265 464 262 461 250 455 234 443 114 370ZM381 93L386 102 389 115 389 288 387 296 381 305 380 335 382 338 384 338 439 307 450 296 455 288 459 275 459 161 452 141 437 124 388 95Z'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* ---- Primary actions use the brand gold in both themes ---- */
+html body :is(.btn.gold,.btn-primary,.primary,.chat-send,.nav-join,.land-btn.gold){background:var(--gold-fill);color:var(--on-gold);border-color:var(--gold-fill)}
+html body :is(.btn.gold,.btn-primary,.primary,.land-btn.gold):hover{filter:brightness(1.06)}
+html body .chat-unread{background:var(--gold-fill);color:var(--on-gold)}
+html body .progress>i,html body .bar-track i{background:linear-gradient(90deg,var(--teal),var(--gold-fill))}
+html body .bar-track i.over{background:var(--danger)}
+
+/* ---- Sidebar keeps the brand navy in both themes, with its own local tokens ---- */
+html body .app-sidebar{--text:#eef3fb;--text-2:#cbd7e8;--muted:#a9b9d0;--line:rgba(190,210,240,.15);--gold:#e0ad52;--gold-fill:#e0ad52;--brand-ink:#ffffff;background:linear-gradient(180deg,#0b2d63 0%,#071f48 55%,#061a3b 100%)}
+html body .app-sidebar .nav-item.active{background:linear-gradient(90deg,rgba(224,173,82,.2),rgba(224,173,82,.04))}
+html body .org-avatar{background:linear-gradient(135deg,#e0ad52,#a8741d);color:#0b1830}
+
+/* ---- Theme toggle ---- */
+.theme-toggle{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;transition:border-color .15s,color .15s}
+.theme-toggle:hover{border-color:var(--gold);color:var(--gold)}
+
+/* =====================================================================
+   Light theme overrides for surfaces that were authored with dark colours
+   ===================================================================== */
+html[data-theme="light"] .app-shell{background:radial-gradient(900px 420px at 100% -10%,rgba(10,127,148,.10),transparent 60%),radial-gradient(700px 380px at 0 0,rgba(212,162,70,.10),transparent 55%),var(--bg)}
+html[data-theme="light"] body .app-topbar{background:rgba(255,255,255,.86);border-bottom-color:var(--line)}
+html[data-theme="light"] body :is(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea){background:var(--input)!important;color:var(--text)!important;border-color:var(--line-strong)!important}
+html[data-theme="light"] body :is(input,textarea)::placeholder{color:#8798b1}
+html[data-theme="light"] body :is(.module-panel,.panel-block,.auth-panel,.chat,.cal-grid,.table-wrap,.dash-card,.kpi,.map-card,.spend-card,.setup-item,.document-row,.obligation-row,.invite-link-box,.tpl-card,.employee-hit,.chat-pick,.gsearch-panel,.bell-panel,.draft-view,.tpl-body,.denied){background:var(--panel)!important;border-color:var(--line)}
+html[data-theme="light"] body :is(.module-panel,.panel-block,.dash-card,.kpi,.map-card,.spend-card,.table-wrap,.chat,.cal-grid){box-shadow:var(--shadow)}
+html[data-theme="light"] body :is(.gsearch-panel,.bell-panel){box-shadow:0 18px 50px rgba(10,38,82,.18)}
+html[data-theme="light"] body :is(.auth-form label,.module-form label,.form-grid label,.chat-panel label,.decision-assignment label,.spend-form label,.chat-check){color:var(--text-2)!important}
+html[data-theme="light"] body :is(.bell-item span,.audience-list>div,.nav-login,.secondary,.land-sub){color:var(--text-2)}
+html[data-theme="light"] body :is(.avatar,.chat-avatar:not(.channel),.user-avatar){background:rgba(29,94,168,.12);color:#1d4f90}
+html[data-theme="light"] body :is(.progress,.bar-track){background:var(--bg-2)}
+html[data-theme="light"] body :is(.chat-msg:hover,.chat-item:hover,.dash-row:hover,.gsearch-hit:hover,.result-row:hover,.cal-item:hover,.bell-item:hover){background:var(--hover)}
+html[data-theme="light"] body .chat-item.active,html[data-theme="light"] body .bell-item.unread{background:rgba(212,162,70,.14)}
+html[data-theme="light"] body :is(.note-err,.error-message,.auth-error){color:var(--danger)}
+html[data-theme="light"] body :is(.note-ok,.success-message,.auth-success){color:var(--ok)}
+html[data-theme="light"] body .diff-line.add{background:rgba(23,128,77,.14);color:#11603a}
+html[data-theme="light"] body .diff-line.del{background:rgba(192,57,43,.12);color:#8e2a1e}
+html[data-theme="light"] body .chip.warn{color:var(--warn)}
+html[data-theme="light"] body .chip.danger{color:var(--danger)}
+html[data-theme="light"] body .chip.ok{color:var(--ok)}
+html[data-theme="light"] body :is(.kpi.warn .kpi-value){color:var(--warn)}
+html[data-theme="light"] body :is(.kpi.danger .kpi-value,.spend-card.over b){color:var(--danger)}
+html[data-theme="light"] body :is(.cal-chip.event){background:rgba(212,162,70,.2)}
+html[data-theme="light"] body .data-table tbody tr:hover{background:var(--hover)}
+html[data-theme="light"] body :is(.module-link,.dash-link,.back-link,.back-row){color:var(--gold)}
+html[data-theme="light"] body .app-content .module-panel{background:var(--panel)!important}
+html[data-theme="light"] body :is(.document-row,.obligation-row){background:var(--panel-2)!important}
+
+/* ---- Subtle refinement of cards in both themes ---- */
+html body :is(.kpi,.dash-card,.panel-block,.map-card){border-radius:16px}
+html body .kpi:hover{box-shadow:var(--shadow)}
