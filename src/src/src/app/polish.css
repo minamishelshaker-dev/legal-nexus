@@ -1,0 +1,33 @@
+/* Accessibility and contrast polish (audited with WCAG contrast ratios) */
+html[data-theme="light"]{--gold:#8f600e}
+
+/* small grey text that was authored for the dark surface */
+html body :is(.kpi-foot,.chat-item-top small,.chat-msg-meta small,.bell-item small,.gsearch-group,.chat-group,.cal-day small,.chat-day,.tl-body small){color:var(--muted)}
+html body .gsearch-icon{color:var(--muted)}
+html body .app-sidebar .nav-group-label{color:#9fb2cc}
+html body .app-sidebar .sidebar-foot{color:#8fa3bf;border-top-color:rgba(190,210,240,.15)}
+html body .app-sidebar .org-meta small{color:#a9b9d0}
+
+/* visible keyboard focus everywhere */
+html body :is(a,button,input,select,textarea,[role="tab"],[tabindex]):focus-visible{outline:2px solid var(--gold-fill);outline-offset:2px;border-radius:8px}
+html body :is(input,select,textarea):focus-visible{outline-offset:0}
+
+::selection{background:rgba(212,162,70,.35);color:inherit}
+
+/* slim scrollbars that follow the theme */
+*{scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+
+/* smoother page feel without distracting motion for those who opt out */
+html body :is(.kpi,.map-card,.dash-card,.panel-block,.land-card){transition:border-color .18s,box-shadow .18s,transform .18s}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* readable long-form text */
+html body :is(.chat-text,.draft-view,.tpl-body){text-rendering:optimizeLegibility}
+
+/* print: hide navigation chrome so contracts and reports print cleanly */
+@media print{
+  .app-sidebar,.app-topbar,.app-scrim,.menu-btn,.theme-toggle,.btn,.btn-primary,.btn-ghost{display:none!important}
+  .app-shell{display:block!important}
+  .app-content{padding:0!important;max-width:none!important}
+  body{background:#fff!important;color:#000!important}
+}

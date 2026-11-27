@@ -4,6 +4,7 @@ import { MARK_DATA_URI } from "@/lib/brand-svg";
 import "./globals.css";
 import "./unify.css";
 import "./theme.css";
+import "./polish.css";
 
 export const metadata: Metadata = {
   title: "Legal Nexus | Legal Management & Enterprise Solutions",
